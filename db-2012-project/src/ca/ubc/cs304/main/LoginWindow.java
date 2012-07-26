@@ -24,6 +24,9 @@ public class LoginWindow extends JDialog implements ActionListener
     private JLabel usernameLabel = new JLabel("Enter username:  ");
     private JLabel passwordLabel = new JLabel("Enter password:  ");
     private JButton loginButton = new JButton("Log In");
+    
+    // login verifier
+    private LoginAccounts logins;
 
 
     /*
@@ -33,6 +36,8 @@ public class LoginWindow extends JDialog implements ActionListener
     {
 	super(parent, "User Login", true);
 	setResizable(false);
+	
+	logins = new LoginAccounts();
 	
 	passwordField.setEchoChar('*');
 	
@@ -109,11 +114,11 @@ public class LoginWindow extends JDialog implements ActionListener
      */ 	    
     public void actionPerformed(ActionEvent e) 
     {
-	if (mvb.connect(usernameField.getText(), 
-			     String.valueOf(passwordField.getPassword())))
+	if (logins.verifyLogin(usernameField.getText(), String.valueOf(passwordField.getPassword())))
 	{
 	    // if the username and password are valid, 
 	    // get rid of the login window
+		mvb.connect();
 	    dispose();     
 	}
 	else
@@ -131,6 +136,18 @@ public class LoginWindow extends JDialog implements ActionListener
 		passwordField.setText("");
 	    }
 	}  
-    }     
+    }
+    private class LoginAccounts{
+    	private final String[] loginNames = { "customer", "clerk", "manager" };
+    	
+    	public LoginAccounts() {}
+    	
+    	public boolean verifyLogin(String user, String password) {
+    		for(String login: loginNames) {
+    			if(user.equals(login) && password.equals(login)) return true;
+    		}
+    		return false;
+    	}
+    }
 }
     

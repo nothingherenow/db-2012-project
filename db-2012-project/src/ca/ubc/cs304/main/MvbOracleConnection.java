@@ -48,12 +48,14 @@ public class MvbOracleConnection
      * the given username and password.
      * Returns true if the connection is successful; false otherwise.
      */ 
-    public boolean connect(String username, String password)
+    public boolean connect()
     {
 	try
 	{
 	    // change the url if the branch table is located somewhere else
 	    String url = "jdbc:oracle:thin:@localhost:1521:ug";
+	    String username = "ora_c1r7";
+	    String password = "a25316100";
 
 	    if (!driverLoaded)
 	    {
