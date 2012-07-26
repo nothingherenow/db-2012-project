@@ -1,9 +1,13 @@
-package ca.ubc.cs304.main;
+package ca.ubc.cs304.tables;
 
 // File: BranchModel.java
 
 import java.sql.*; 
 import javax.swing.event.EventListenerList;
+
+import ca.ubc.cs304.main.ExceptionEvent;
+import ca.ubc.cs304.main.ExceptionListener;
+import ca.ubc.cs304.main.MvbOracleConnection;
 
 
 /*

@@ -1,4 +1,4 @@
-package ca.ubc.cs304.main;
+package ca.ubc.cs304.tables;
 
 // File: BranchController.java
 
@@ -6,6 +6,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
+
+import ca.ubc.cs304.main.CustomTable;
+import ca.ubc.cs304.main.CustomTableModel;
+import ca.ubc.cs304.main.ExceptionEvent;
+import ca.ubc.cs304.main.ExceptionListener;
+import ca.ubc.cs304.main.MvbView;
+
 import java.sql.*;
 
 

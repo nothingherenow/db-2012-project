@@ -7,6 +7,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import ca.ubc.cs304.tables.BranchController;
+
 
 /*
  * MvbView allows a user to view and manipulate the branch table.
