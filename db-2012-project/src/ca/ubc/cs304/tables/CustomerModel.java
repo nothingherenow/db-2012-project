@@ -22,7 +22,8 @@ public class CustomerModel {
 	}
 
 	/*
-	 * Insert a Customer caddr and cphone can be null
+	 * Insert a Customer caddr and cphone can be null Returns true if the insert
+	 * is successful; false otherwise.
 	 */
 	public boolean insertCustomer(String cid, String cname, String cpass,
 			String caddr, Integer cphone) {
@@ -65,68 +66,57 @@ public class CustomerModel {
 			}
 		}
 	}
-	
-	  /*
-     * Deletes a customer.
-     * Returns true if the delete is successful; false otherwise.
-     */
-    public boolean deleteCustomer(String cid)
-    {
-	try
-	{	  
-	    ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
 
-	    ps.setString(1, cid);
+	/*
+	 * Deletes a customer. Returns true if the delete is successful; false
+	 * otherwise.
+	 */
+	public boolean deleteCustomer(String cid) {
+		try {
+			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
 
-	    ps.executeUpdate();
+			ps.setString(1, cid);
 
-	    con.commit();
+			ps.executeUpdate();
 
-	    return true; 
+			con.commit();
+
+			return true;
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try {
+				con.rollback();
+				return false;
+			} catch (SQLException ex2) {
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false;
+			}
+		}
 	}
-	catch (SQLException ex)
-	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-	    
-	    try
-	    {
-		con.rollback();
-		return false; 
-	    }
-	    catch (SQLException ex2)
-	    {
-		event = new ExceptionEvent(this, ex2.getMessage());
-		fireExceptionGenerated(event);
-		return false; 
-	    }
-	}
-    }
-    
-    /*
-     * Returns an updatable result set for Customer 
-     */ 
-    public ResultSet editCustomer()
-    {
-	try
-	{	 
-	    ps = con.prepareStatement("SELECT c.* FROM customer c", 
-				      ResultSet.TYPE_SCROLL_INSENSITIVE,
-				      ResultSet.CONCUR_UPDATABLE);
 
-	    ResultSet rs = ps.executeQuery();
+	/*
+	 * Returns an updatable result set for Customer
+	 */
+	public ResultSet editCustomer() {
+		try {
+			ps = con.prepareStatement("SELECT c.* FROM customer c",
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-	    return rs; 
-	}
-	catch (SQLException ex)
-	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-	    // no need to commit or rollback since it is only a query
+			ResultSet rs = ps.executeQuery();
 
-	    return null; 
+			return rs;
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null;
+		}
 	}
-    }
 
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
