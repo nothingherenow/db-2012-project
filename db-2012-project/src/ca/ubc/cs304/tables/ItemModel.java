@@ -1,5 +1,6 @@
 package ca.ubc.cs304.tables;
 
+import java.math.BigDecimal;
 import java.sql.*;
 
 import javax.swing.event.EventListenerList;
@@ -8,7 +9,8 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
-public class CustomerModel {
+public class ItemModel {
+
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
@@ -17,37 +19,45 @@ public class CustomerModel {
 	 * Default constructor Precondition: The Connection object in
 	 * MvbOracleConnection must be a valid database connection.
 	 */
-	public CustomerModel() {
+	public ItemModel() {
 		con = MvbOracleConnection.getInstance().getConnection();
 	}
 
 	/*
-	 * Insert a Customer caddr and cphone can be null Returns true if the insert
-	 * is successful; false otherwise.
+	 * Insert a Item Returns true if the insert is successful; false otherwise.
+	 * year,company, and quantity can be null
 	 */
-	public boolean insertCustomer(String cid, String cname, String cpass,
-			String caddr, Integer cphone) {
+	public boolean insertItem(Integer upc, String ititle, String icat,
+			String icomp, Integer iyear, Integer iquantity, BigDecimal isellp) {
 		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?)");
 
-			ps.setString(1, cid);
+			ps.setInt(1, upc.intValue());
 
-			ps.setString(2, cname);
+			ps.setString(2, ititle);
 
-			ps.setString(3, cpass);
+			ps.setString(3, icat);
 
-			if (caddr != null) {
-				ps.setString(4, caddr);
+			if (icomp != null) {
+				ps.setString(4, icomp);
 			} else {
 				ps.setString(4, null);
 			}
 
-			if (cphone != null) {
-				ps.setInt(5, cphone.intValue());
+			if (iyear != null) {
+				ps.setInt(5, iyear.intValue());
 			} else {
 				ps.setNull(5, Types.INTEGER);
 			}
 
+			if (iquantity != null) {
+				ps.setInt(6, iquantity.intValue());
+			} else {
+				ps.setNull(6, Types.INTEGER);
+			}
+
+			ps.setBigDecimal(7, isellp);
+
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -68,14 +78,14 @@ public class CustomerModel {
 	}
 
 	/*
-	 * Deletes a customer. Returns true if the delete is successful; false
+	 * Deletes an item. Returns true if the delete is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(String cid) {
+	public boolean deleteItem(Integer upc) {
 		try {
-			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
+			ps = con.prepareStatement("DELETE FROM item WHERE upc = ?");
 
-			ps.setString(1, cid);
+			ps.setInt(1, upc.intValue());
 
 			ps.executeUpdate();
 
@@ -98,11 +108,11 @@ public class CustomerModel {
 	}
 
 	/*
-	 * Returns an updatable result set for Customer
+	 * Returns an updatable result set for Item
 	 */
-	public ResultSet editCustomer() {
+	public ResultSet editItem() {
 		try {
-			ps = con.prepareStatement("SELECT c.* FROM customer c",
+			ps = con.prepareStatement("SELECT i.* FROM item i",
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 
@@ -137,4 +147,5 @@ public class CustomerModel {
 			}
 		}
 	}
+
 }

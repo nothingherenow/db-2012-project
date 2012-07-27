@@ -1,5 +1,4 @@
 package ca.ubc.cs304.tables;
-
 import java.sql.*;
 
 import javax.swing.event.EventListenerList;
@@ -8,74 +7,64 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
-public class CustomerModel {
+
+public class PurchaseItemModel {
+	
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
-
+	
 	/*
 	 * Default constructor Precondition: The Connection object in
 	 * MvbOracleConnection must be a valid database connection.
 	 */
-	public CustomerModel() {
+	public PurchaseItemModel() {
 		con = MvbOracleConnection.getInstance().getConnection();
 	}
-
 	/*
-	 * Insert a Customer caddr and cphone can be null Returns true if the insert
-	 * is successful; false otherwise.
-	 */
-	public boolean insertCustomer(String cid, String cname, String cpass,
-			String caddr, Integer cphone) {
-		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
-
-			ps.setString(1, cid);
-
-			ps.setString(2, cname);
-
-			ps.setString(3, cpass);
-
-			if (caddr != null) {
-				ps.setString(4, caddr);
-			} else {
-				ps.setString(4, null);
-			}
-
-			if (cphone != null) {
-				ps.setInt(5, cphone.intValue());
-			} else {
-				ps.setNull(5, Types.INTEGER);
-			}
-
-			ps.executeUpdate();
-			con.commit();
-			return true;
-
-		} catch (SQLException ex) {
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try {
-				con.rollback();
-				return false;
-			} catch (SQLException ex2) {
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false;
-			}
-		}
-	}
-
-	/*
-	 * Deletes a customer. Returns true if the delete is successful; false
+	 * Insert a PurchaseItem Returns true if the insert is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(String cid) {
+	public boolean insertPurchaseItem(Integer pirid, Integer piupc, Integer piquantity) {
 		try {
-			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
+			ps = con.prepareStatement("INSERT INTO purchaseitem VALUES (?,?,?)");
 
-			ps.setString(1, cid);
+			ps.setInt(1, pirid.intValue());
+
+			ps.setInt(2, piupc.intValue());
+
+			ps.setInt(3, piquantity.intValue());
+
+			ps.executeUpdate();
+			con.commit();
+			return true;
+
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try {
+				con.rollback();
+				return false;
+			} catch (SQLException ex2) {
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false;
+			}
+		}
+	}
+	
+	/*
+	 * Deletes a PurchaseItem tuple. Returns true if the delete is successful; false
+	 * otherwise.
+	 */
+	public boolean deletePurchaseItem(Integer rid, Integer upc) {
+		try {
+			ps = con.prepareStatement("DELETE FROM purchaseitem WHERE receipt_id = ? AND upc = ?");
+
+			ps.setInt(1, rid.intValue());
+
+			ps.setInt(2, upc.intValue());
 
 			ps.executeUpdate();
 
@@ -96,13 +85,12 @@ public class CustomerModel {
 			}
 		}
 	}
-
 	/*
-	 * Returns an updatable result set for Customer
+	 * Returns an updatable result set for PurchaseItem
 	 */
-	public ResultSet editCustomer() {
+	public ResultSet editPurchaseItem() {
 		try {
-			ps = con.prepareStatement("SELECT c.* FROM customer c",
+			ps = con.prepareStatement("SELECT pi.* FROM purchaseitem pi",
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 

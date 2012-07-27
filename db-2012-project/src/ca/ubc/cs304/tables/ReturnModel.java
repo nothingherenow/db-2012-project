@@ -1,5 +1,4 @@
 package ca.ubc.cs304.tables;
-
 import java.sql.*;
 
 import javax.swing.event.EventListenerList;
@@ -8,46 +7,39 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
-public class CustomerModel {
+public class ReturnModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
-
+	
 	/*
 	 * Default constructor Precondition: The Connection object in
 	 * MvbOracleConnection must be a valid database connection.
 	 */
-	public CustomerModel() {
+	public ReturnModel() {
 		con = MvbOracleConnection.getInstance().getConnection();
 	}
-
+	
 	/*
-	 * Insert a Customer caddr and cphone can be null Returns true if the insert
-	 * is successful; false otherwise.
+	 * Insert a Return. Returns true if the insert is successful; false
+	 * otherwise.
 	 */
-	public boolean insertCustomer(String cid, String cname, String cpass,
-			String caddr, Integer cphone) {
+	public boolean insertReturn(Integer retid, Date rdate, Integer rid, String rname) {
 		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO return VALUES (?,?,?,?)");
 
-			ps.setString(1, cid);
+			ps.setInt(1, retid.intValue());
 
-			ps.setString(2, cname);
+			ps.setDate(2, rdate);
 
-			ps.setString(3, cpass);
-
-			if (caddr != null) {
-				ps.setString(4, caddr);
+			ps.setInt(3, rid.intValue());
+			
+			if (rname != null) {
+				ps.setString(4, rname);
 			} else {
 				ps.setString(4, null);
 			}
 
-			if (cphone != null) {
-				ps.setInt(5, cphone.intValue());
-			} else {
-				ps.setNull(5, Types.INTEGER);
-			}
-
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -66,16 +58,15 @@ public class CustomerModel {
 			}
 		}
 	}
-
 	/*
-	 * Deletes a customer. Returns true if the delete is successful; false
+	 * Deletes a Return tuple. Returns true if the delete is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(String cid) {
+	public boolean deleteReturn(Integer retid) {
 		try {
-			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
+			ps = con.prepareStatement("DELETE FROM return WHERE retid = ?");
 
-			ps.setString(1, cid);
+			ps.setInt(1, retid.intValue());
 
 			ps.executeUpdate();
 
@@ -96,13 +87,12 @@ public class CustomerModel {
 			}
 		}
 	}
-
 	/*
-	 * Returns an updatable result set for Customer
+	 * Returns an updatable result set for Return
 	 */
-	public ResultSet editCustomer() {
+	public ResultSet editReturn() {
 		try {
-			ps = con.prepareStatement("SELECT c.* FROM customer c",
+			ps = con.prepareStatement("SELECT r.* FROM return r",
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 
@@ -137,4 +127,5 @@ public class CustomerModel {
 			}
 		}
 	}
+
 }

@@ -8,7 +8,8 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
-public class CustomerModel {
+public class ShipmentModel {
+
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
@@ -17,36 +18,23 @@ public class CustomerModel {
 	 * Default constructor Precondition: The Connection object in
 	 * MvbOracleConnection must be a valid database connection.
 	 */
-	public CustomerModel() {
+	public ShipmentModel() {
 		con = MvbOracleConnection.getInstance().getConnection();
 	}
-
+	
 	/*
-	 * Insert a Customer caddr and cphone can be null Returns true if the insert
+	 * Insert a Shipment  Returns true if the insert
 	 * is successful; false otherwise.
 	 */
-	public boolean insertCustomer(String cid, String cname, String cpass,
-			String caddr, Integer cphone) {
+	public boolean insertShipment(Integer sid, String supname, Date sdate) {
 		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO shipment VALUES (?,?,?)");
 
-			ps.setString(1, cid);
+			ps.setInt(1, sid.intValue());
 
-			ps.setString(2, cname);
+			ps.setString(2, supname);
 
-			ps.setString(3, cpass);
-
-			if (caddr != null) {
-				ps.setString(4, caddr);
-			} else {
-				ps.setString(4, null);
-			}
-
-			if (cphone != null) {
-				ps.setInt(5, cphone.intValue());
-			} else {
-				ps.setNull(5, Types.INTEGER);
-			}
+			ps.setDate(3, sdate);
 
 			ps.executeUpdate();
 			con.commit();
@@ -66,16 +54,16 @@ public class CustomerModel {
 			}
 		}
 	}
-
+	
 	/*
-	 * Deletes a customer. Returns true if the delete is successful; false
+	 * Deletes a shipment. Returns true if the delete is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(String cid) {
+	public boolean deleteShipment(Integer sid) {
 		try {
-			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
+			ps = con.prepareStatement("DELETE FROM shipment WHERE sid = ?");
 
-			ps.setString(1, cid);
+			ps.setInt(1, sid.intValue());
 
 			ps.executeUpdate();
 
@@ -96,13 +84,13 @@ public class CustomerModel {
 			}
 		}
 	}
-
+	
 	/*
-	 * Returns an updatable result set for Customer
+	 * Returns an updatable result set for Shipment
 	 */
-	public ResultSet editCustomer() {
+	public ResultSet editShipment() {
 		try {
-			ps = con.prepareStatement("SELECT c.* FROM customer c",
+			ps = con.prepareStatement("SELECT s.* FROM shipment s",
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 
@@ -137,4 +125,6 @@ public class CustomerModel {
 			}
 		}
 	}
+
+
 }
