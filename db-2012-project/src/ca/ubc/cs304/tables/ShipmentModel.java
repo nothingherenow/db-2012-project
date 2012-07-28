@@ -26,15 +26,13 @@ public class ShipmentModel {
 	 * Insert a Shipment  Returns true if the insert
 	 * is successful; false otherwise.
 	 */
-	public boolean insertShipment(Integer sid, String supname, Date sdate) {
+	public boolean insertShipment(String supname, Date sdate) {
 		try {
-			ps = con.prepareStatement("INSERT INTO shipment VALUES (?,?,?)");
+			ps = con.prepareStatement("INSERT INTO shipment VALUES (shipment_counter.nextval,?,?)");
 
-			ps.setInt(1, sid.intValue());
+			ps.setString(1, supname);
 
-			ps.setString(2, supname);
-
-			ps.setDate(3, sdate);
+			ps.setDate(2, sdate);
 
 			ps.executeUpdate();
 			con.commit();

@@ -441,7 +441,7 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
 
 		if (customer.findCustomer(cid))
 		{
-			JOptionPane.showMessageDialog(this, "Customer ID \"" + cid + "\" already exists. Try another one.");
+			JOptionPane.showMessageDialog(this, "Customer ID \"" + cid + "\" already exists. Try another one.", "Error", JOptionPane.ERROR_MESSAGE);
 			return OPERATIONFAILED;
 		} 
 		else if (customer.insertCustomer(cid, cname, cpassword, caddr, cphone))

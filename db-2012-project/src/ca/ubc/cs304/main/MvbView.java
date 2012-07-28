@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import ca.ubc.cs304.tables.BranchController;
+import ca.ubc.cs304.tables.CustomerController;
+import ca.ubc.cs304.tables.ShipmentController;
 
 /*
  * MvbView allows a user to view and manipulate the branch table.
@@ -165,6 +167,9 @@ public class MvbView extends JFrame {
 		createMenuItem(custAdmin, "Insert Customer...", KeyEvent.VK_I,
 				"Insert Customer");
 
+		createMenuItem(custAdmin, "Update Customer...", KeyEvent.VK_U,
+				"Update Customer");
+		
 		createMenuItem(custAdmin, "Delete Customer...", KeyEvent.VK_D,
 				"Delete Customer");
 
@@ -191,6 +196,9 @@ public class MvbView extends JFrame {
 		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
 				"Insert HasSong");
 
+		createMenuItem(hasSongAdmin, "Update HasSong...", KeyEvent.VK_U,
+				"Update HasSong");
+		
 		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
 				"Delete HasSong");
 
@@ -216,6 +224,9 @@ public class MvbView extends JFrame {
 		createMenuItem(itemAdmin, "Insert Item...", KeyEvent.VK_I,
 				"Insert Item");
 
+		createMenuItem(itemAdmin, "Update Item...", KeyEvent.VK_U,
+				"Update Item");
+		
 		createMenuItem(itemAdmin, "Delete Item...", KeyEvent.VK_D,
 				"Delete Item");
 
@@ -240,6 +251,9 @@ public class MvbView extends JFrame {
 
 		createMenuItem(leadSingerAdmin, "Insert LeadSinger...", KeyEvent.VK_I,
 				"Insert LeadSinger");
+		
+		createMenuItem(leadSingerAdmin, "Update LeadSinger...", KeyEvent.VK_U,
+				"Update LeadSinger");
 
 		createMenuItem(leadSingerAdmin, "Delete LeadSinger...", KeyEvent.VK_D,
 				"Delete LeadSinger");
@@ -265,6 +279,9 @@ public class MvbView extends JFrame {
 
 		createMenuItem(purchaseItemAdmin, "Insert PurchaseItem...", KeyEvent.VK_I,
 				"Insert PurchaseItem");
+		
+		createMenuItem(purchaseItemAdmin, "Update PurchaseItem...", KeyEvent.VK_U,
+				"Update PurchaseItem");
 
 		createMenuItem(purchaseItemAdmin, "Delete PurchaseItem...", KeyEvent.VK_D,
 				"Delete PurchaseItem");
@@ -292,6 +309,9 @@ public class MvbView extends JFrame {
 		createMenuItem(purchaseAdmin, "Insert Purchase...", KeyEvent.VK_I,
 				"Insert Purchase");
 
+		createMenuItem(purchaseAdmin, "Update Purchase...", KeyEvent.VK_U,
+				"Update Purchase");
+		
 		createMenuItem(purchaseAdmin, "Delete Purchase...", KeyEvent.VK_D,
 				"Delete Purchase");
 
@@ -317,6 +337,9 @@ public class MvbView extends JFrame {
 		createMenuItem(returnItemAdmin, "Insert ReturnItem...", KeyEvent.VK_I,
 				"Insert ReturnItem");
 
+		createMenuItem(returnItemAdmin, "Update ReturnItem...", KeyEvent.VK_U,
+				"Update ReturnItem");
+		
 		createMenuItem(returnItemAdmin, "Delete ReturnItem...", KeyEvent.VK_D,
 				"Delete ReturnItem");
 
@@ -342,6 +365,9 @@ public class MvbView extends JFrame {
 		createMenuItem(returnAdmin, "Insert Return...", KeyEvent.VK_I,
 				"Insert Return");
 
+		createMenuItem(returnAdmin, "Update Return...", KeyEvent.VK_U,
+				"Update Return");
+		
 		createMenuItem(returnAdmin, "Delete Return...", KeyEvent.VK_D,
 				"Delete Return");
 
@@ -367,6 +393,9 @@ public class MvbView extends JFrame {
 		createMenuItem(shipItemAdmin, "Insert ShipItem...", KeyEvent.VK_I,
 				"Insert ShipItem");
 
+		createMenuItem(shipItemAdmin, "Update ShipItem...", KeyEvent.VK_U,
+				"Update ShipItem");
+		
 		createMenuItem(shipItemAdmin, "Delete ShipItem...", KeyEvent.VK_D,
 				"Delete ShipItem");
 
@@ -392,6 +421,9 @@ public class MvbView extends JFrame {
 		createMenuItem(shipmentAdmin, "Insert Shipment...", KeyEvent.VK_I,
 				"Insert Shipment");
 
+		createMenuItem(shipmentAdmin, "Update Shipment...", KeyEvent.VK_U,
+				"Update Shipment");
+		
 		createMenuItem(shipmentAdmin, "Delete Shipment...", KeyEvent.VK_D,
 				"Delete Shipment");
 
@@ -470,10 +502,25 @@ public class MvbView extends JFrame {
 		// BranchController handles events on the branch admin menu items (i.e.
 		// when they are clicked)
 		BranchController bc = new BranchController(this);
-
+		
 		for (int i = 0; i < branchAdmin.getItemCount(); i++) {
 			menuItem = branchAdmin.getItem(i);
 			menuItem.addActionListener(bc);
+		}
+		
+		// Register all controllers
+		CustomerController cc = new CustomerController(this);
+
+		for (int i = 0; i < custAdmin.getItemCount(); i++) {
+			menuItem = custAdmin.getItem(i);
+			menuItem.addActionListener(cc);
+		}
+		
+		ShipmentController sc = new ShipmentController(this);
+		
+		for (int i = 0; i < shipmentAdmin.getItemCount(); i++) {
+			menuItem = shipmentAdmin.getItem(i);
+			menuItem.addActionListener(sc);
 		}
 	}
 

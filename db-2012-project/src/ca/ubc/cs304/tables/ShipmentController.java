@@ -176,8 +176,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
      */
     class ShipmentInsertDialog extends JDialog implements ActionListener
     {
-	
-	private JTextField shipId = new JTextField(10);
+    	
 	private JTextField shipSupName = new JTextField(20);
 	private JTextField shipDate = new JTextField(8);
 
@@ -207,23 +206,8 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place shipment id label
-	    JLabel label = new JLabel("Shipment ID: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place shipment id field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(shipId, c);
-	    inputPane.add(shipId);
-
 	    // create and place supplier name label
-	    label = new JLabel("Supplier Name: ", SwingConstants.RIGHT);
+	    JLabel label = new JLabel("Supplier Name: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -238,7 +222,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    inputPane.add(shipSupName);
 
 	    // create and place shipment date label
-	    label = new JLabel("Shipment Date (dd/MM/yy): ", SwingConstants.RIGHT);
+	    label = new JLabel("Shipment Date (dd-MM-yyyy): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -327,28 +311,8 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	 */ 
 	private int validateInsert()
 	{
-	    try
-	    {
-		Integer sid;
 		String supName;
 		Date sdate;
-
-		if (shipId.getText().trim().length() != 0)
-		{
-		    sid = Integer.valueOf(shipId.getText().trim());
-
-		    // check for duplicates
-		    if (shipment.findShipment(sid.intValue()))
-		    {
-			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("Shipment ID " + sid.toString() + " already exists!");
-			return OPERATIONFAILED; 
-		    }
-		}
-		else
-		{
-			return VALIDATIONERROR; 
-		}
 
 		if (shipSupName.getText().trim().length() != 0)
 		{
@@ -361,9 +325,9 @@ public class ShipmentController implements ActionListener, ExceptionListener
 
 		String stringDate = shipDate.getText().trim();
 		
-		if (stringDate.length() != 8)
+		if (stringDate.length() == 8)
 		{
-			SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
 			java.util.Date utilDate;
 			try {
 				utilDate = fm.parse(stringDate);
@@ -379,7 +343,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 
 		mvb.updateStatusBar("Inserting shipment...");
 
-		if (shipment.insertShipment(sid, supName, sdate))
+		if (shipment.insertShipment(supName, sdate))
 		{
 		    mvb.updateStatusBar("Operation successful.");
 		    showAllShipments();
@@ -391,13 +355,6 @@ public class ShipmentController implements ActionListener, ExceptionListener
 		    mvb.updateStatusBar("Operation failed.");
 		    return OPERATIONFAILED; 
 		}
-	    }
-	    catch (NumberFormatException ex)
-	    {
-		// this exception is thrown when a string 
-		// cannot be converted to a number
-		return VALIDATIONERROR; 
-	    }
 	}
     }
 
@@ -468,7 +425,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    inputPane.add(shipSupName);
 	    
 	    // create and place shipment date label
-	    label = new JLabel("New Shipment Date: ", SwingConstants.RIGHT);
+	    label = new JLabel("New Shipment Date (dd-MM-yyyy): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -590,9 +547,9 @@ public class ShipmentController implements ActionListener, ExceptionListener
 		
 		String stringDate = shipDate.getText().trim();
 		
-		if (stringDate.length() != 8)
+		if (stringDate.length() == 8)
 		{
-			SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
 			java.util.Date utilDate;
 			try {
 				utilDate = fm.parse(stringDate);
