@@ -4,6 +4,7 @@ package ca.ubc.cs304.main;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -69,23 +70,9 @@ public class MvbView extends JFrame {
 		// indent first menu
 		menuBar.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		// sets up the administration menus and adds them to the
-		// menu bar
+		// sets up the administration menus and adds them to the menu bar
 		setupBranchAdminMenu(menuBar);
 		setupAdmins(menuBar);
-
-		/*// Setup some other menus. You may be asked to add functionality
-		// to these menus in an assignment.
-		JMenu menu = new JMenu("Customer Admin");
-		menu.setMnemonic(KeyEvent.VK_D);
-		menuBar.add(menu);
-		menu = new JMenu("License Admin");
-		menu.setMnemonic(KeyEvent.VK_L);
-		menuBar.add(menu);
-		menu = new JMenu("Exam Admin");
-		menu.setMnemonic(KeyEvent.VK_E);
-		menuBar.add(menu);
-		*/
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -121,9 +108,17 @@ public class MvbView extends JFrame {
 		admin = new JMenu("Admin");
 		
 		admin.setMnemonic(KeyEvent.VK_A);
-		
 		mb.add(admin);
 		setupCustAdminMenu(admin);
+		setupHasSongAdminMenu(admin);
+		setupItemAdminMenu(admin);
+		setupLeadSingerAdminMenu(admin);
+		setupPurchaseItemAdminMenu(admin);
+		setupPurchaseAdminMenu(admin);
+		setupReturnItemAdminMenu(admin);
+		setupReturnAdminMenu(admin);
+		setupShipItemAdminMenu(admin);
+		setupShipmentAdminMenu(admin);
 	}
 	
 	/*
@@ -183,6 +178,31 @@ public class MvbView extends JFrame {
 	}
 
 	/*
+	 * Adds menu items to the HasSong menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupHasSongAdminMenu(JMenu admin) {
+		hasSongAdmin = new JMenu("HasSong Admin");
+
+		// when h is pressed on the keyboard, the menu will appear
+		hasSongAdmin.setMnemonic(KeyEvent.VK_H);
+
+		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
+				"Insert HasSong");
+
+		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
+				"Delete HasSong");
+
+		JMenuItem menuItem = createMenuItem(hasSongAdmin, "Show All HasSongs",
+				KeyEvent.VK_S, "Show HasSong");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(hasSongAdmin);
+	}
+	
+	/*
 	 * Adds menu items to the Item menu and then adds the menu to the
 	 * menubar
 	 */
@@ -208,53 +228,179 @@ public class MvbView extends JFrame {
 	}
 	
 	/*
-	 * Adds menu items to the HasSong menu and then adds the menu to the
+	 * Adds menu items to the LeadSinger menu and then adds the menu to the
 	 * menubar
 	 */
-	private void setupHasSongAdminMenu(JMenu admin) {
-		hasSongAdmin = new JMenu("HasSong Admin");
+	private void setupLeadSingerAdminMenu(JMenu admin) {
+		leadSingerAdmin = new JMenu("LeadSinger Admin");
 
-		// when h is pressed on the keyboard, the menu will appear
-		hasSongAdmin.setMnemonic(KeyEvent.VK_H);
+		// when l is pressed on the keyboard, the menu will appear
+		leadSingerAdmin.setMnemonic(KeyEvent.VK_L);
 
-		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
-				"Insert HasSong");
+		createMenuItem(leadSingerAdmin, "Insert LeadSinger...", KeyEvent.VK_I,
+				"Insert LeadSinger");
 
-		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
-				"Delete HasSong");
+		createMenuItem(leadSingerAdmin, "Delete LeadSinger...", KeyEvent.VK_D,
+				"Delete LeadSinger");
 
-		JMenuItem menuItem = createMenuItem(itemAdmin, "Show All HasSongs",
-				KeyEvent.VK_S, "Show HasSong");
+		JMenuItem menuItem = createMenuItem(leadSingerAdmin, "Show All LeadSingers",
+				KeyEvent.VK_S, "Show LeadSinger");
 		// setup a short cut key for this menu item
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
 				ActionEvent.CTRL_MASK));
 
-		admin.add(hasSongAdmin);
+		admin.add(leadSingerAdmin);
 	}
 	
 	/*
-	 * Adds menu items to the HasSong menu and then adds the menu to the
+	 * Adds menu items to the PurchaseItem menu and then adds the menu to the
 	 * menubar
 	 */
-	private void setupHasSongAdminMenu(JMenu admin) {
-		hasSongAdmin = new JMenu("HasSong Admin");
+	private void setupPurchaseItemAdminMenu(JMenu admin) {
+		purchaseItemAdmin = new JMenu("PurchaseItem Admin");
 
-		// when h is pressed on the keyboard, the menu will appear
-		hasSongAdmin.setMnemonic(KeyEvent.VK_H);
+		// when u is pressed on the keyboard, the menu will appear
+		purchaseItemAdmin.setMnemonic(KeyEvent.VK_U);
 
-		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
-				"Insert HasSong");
+		createMenuItem(purchaseItemAdmin, "Insert PurchaseItem...", KeyEvent.VK_I,
+				"Insert PurchaseItem");
 
-		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
-				"Delete HasSong");
+		createMenuItem(purchaseItemAdmin, "Delete PurchaseItem...", KeyEvent.VK_D,
+				"Delete PurchaseItem");
 
-		JMenuItem menuItem = createMenuItem(itemAdmin, "Show All HasSongs",
-				KeyEvent.VK_S, "Show HasSong");
+		JMenuItem menuItem = createMenuItem(purchaseItemAdmin, "Show All PurchaseItems",
+				KeyEvent.VK_S, "Show PurchaseItem");
 		// setup a short cut key for this menu item
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
 				ActionEvent.CTRL_MASK));
 
-		admin.add(hasSongAdmin);
+		admin.add(purchaseItemAdmin);
+	}
+	
+
+	/*
+	 * Adds menu items to the Purchase menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupPurchaseAdminMenu(JMenu admin) {
+		purchaseAdmin = new JMenu("Purchase Admin");
+
+		// when p is pressed on the keyboard, the menu will appear
+		purchaseAdmin.setMnemonic(KeyEvent.VK_P);
+
+		createMenuItem(purchaseAdmin, "Insert Purchase...", KeyEvent.VK_I,
+				"Insert Purchase");
+
+		createMenuItem(purchaseAdmin, "Delete Purchase...", KeyEvent.VK_D,
+				"Delete Purchase");
+
+		JMenuItem menuItem = createMenuItem(purchaseAdmin, "Show All Purchases",
+				KeyEvent.VK_S, "Show Purchase");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(purchaseAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the ReturnItem menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupReturnItemAdminMenu(JMenu admin) {
+		returnItemAdmin = new JMenu("ReturnItem Admin");
+
+		// when e is pressed on the keyboard, the menu will appear
+		returnItemAdmin.setMnemonic(KeyEvent.VK_E);
+
+		createMenuItem(returnItemAdmin, "Insert ReturnItem...", KeyEvent.VK_I,
+				"Insert ReturnItem");
+
+		createMenuItem(returnItemAdmin, "Delete ReturnItem...", KeyEvent.VK_D,
+				"Delete ReturnItem");
+
+		JMenuItem menuItem = createMenuItem(returnItemAdmin, "Show All ReturnItems",
+				KeyEvent.VK_S, "Show ReturnItem");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(returnItemAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the Return menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupReturnAdminMenu(JMenu admin) {
+		returnAdmin = new JMenu("Return Admin");
+
+		// when r is pressed on the keyboard, the menu will appear
+		returnAdmin.setMnemonic(KeyEvent.VK_R);
+
+		createMenuItem(returnAdmin, "Insert Return...", KeyEvent.VK_I,
+				"Insert Return");
+
+		createMenuItem(returnAdmin, "Delete Return...", KeyEvent.VK_D,
+				"Delete Return");
+
+		JMenuItem menuItem = createMenuItem(returnAdmin, "Show All Returns",
+				KeyEvent.VK_S, "Show Return");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(returnAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the ShipItem menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupShipItemAdminMenu(JMenu admin) {
+		shipItemAdmin = new JMenu("ShipItem Admin");
+
+		// when t is pressed on the keyboard, the menu will appear
+		shipItemAdmin.setMnemonic(KeyEvent.VK_T);
+
+		createMenuItem(shipItemAdmin, "Insert ShipItem...", KeyEvent.VK_I,
+				"Insert ShipItem");
+
+		createMenuItem(shipItemAdmin, "Delete ShipItem...", KeyEvent.VK_D,
+				"Delete ShipItem");
+
+		JMenuItem menuItem = createMenuItem(shipItemAdmin, "Show All ShipItems",
+				KeyEvent.VK_S, "Show ShipItem");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(shipItemAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the Shipment menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupShipmentAdminMenu(JMenu admin) {
+		shipmentAdmin = new JMenu("Shipment Admin");
+
+		// when s is pressed on the keyboard, the menu will appear
+		shipmentAdmin.setMnemonic(KeyEvent.VK_S);
+
+		createMenuItem(shipmentAdmin, "Insert Shipment...", KeyEvent.VK_I,
+				"Insert Shipment");
+
+		createMenuItem(shipmentAdmin, "Delete Shipment...", KeyEvent.VK_D,
+				"Delete Shipment");
+
+		JMenuItem menuItem = createMenuItem(shipmentAdmin, "Show All Shipments",
+				KeyEvent.VK_S, "Show Shipment");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(shipmentAdmin);
 	}
 	
 	/*
