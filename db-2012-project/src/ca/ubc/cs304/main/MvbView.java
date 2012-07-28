@@ -39,7 +39,7 @@ public class MvbView extends JFrame {
 	 */
 	public MvbView() {
 		// should call the constructor of the superclass first
-		super("Motor Vehicle Branch Administration");
+		super("Allegro Music Store");
 		setSize(650, 450);
 
 		// the content pane;
@@ -140,14 +140,14 @@ public class MvbView extends JFrame {
 	}
 
 	/*
-	 * Adds menu items to the Branch Admin menu and then adds the menu to the
+	 * Adds menu items to the Customer menu and then adds the menu to the
 	 * menubar
 	 */
 	private void setupCustAdminMenu(JMenuBar mb) {
 		custAdmin = new JMenu("Customer Admin");
 
 		// when alt-b is pressed on the keyboard, the menu will appear
-		custAdmin.setMnemonic(KeyEvent.VK_D);
+		custAdmin.setMnemonic(KeyEvent.VK_C);
 
 		createMenuItem(custAdmin, "Insert Customer...", KeyEvent.VK_I,
 				"Insert Customer");
@@ -160,7 +160,6 @@ public class MvbView extends JFrame {
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
 				ActionEvent.CTRL_MASK));
-
 
 		mb.add(custAdmin);
 	}

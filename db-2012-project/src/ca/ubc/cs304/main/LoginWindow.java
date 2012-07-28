@@ -37,6 +37,8 @@ public class LoginWindow extends JDialog implements ActionListener
 	super(parent, "User Login", true);
 	setResizable(false);
 	
+	mvb.connect();
+	
 	logins = new LoginAccounts();
 	
 	passwordField.setEchoChar('*');
@@ -118,7 +120,6 @@ public class LoginWindow extends JDialog implements ActionListener
 	{
 	    // if the username and password are valid, 
 	    // get rid of the login window
-		mvb.connect();
 	    dispose();     
 	}
 	else
