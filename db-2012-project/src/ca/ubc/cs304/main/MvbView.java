@@ -34,6 +34,9 @@ public class MvbView extends JFrame {
 	// the customer admin menu
 	private JMenu custAdmin;
 
+	// the shipment admin menu
+	private JMenu shipmentAdmin;
+
 	/*
 	 * Default constructor. Constructs the main window.
 	 */
@@ -65,18 +68,19 @@ public class MvbView extends JFrame {
 		// menu bar
 		setupCustAdminMenu(menuBar);
 
-		/*// Setup some other menus. You may be asked to add functionality
-		// to these menus in an assignment.
-		JMenu menu = new JMenu("Customer Admin");
-		menu.setMnemonic(KeyEvent.VK_D);
-		menuBar.add(menu);
-		menu = new JMenu("License Admin");
-		menu.setMnemonic(KeyEvent.VK_L);
-		menuBar.add(menu);
-		menu = new JMenu("Exam Admin");
-		menu.setMnemonic(KeyEvent.VK_E);
-		menuBar.add(menu);
-		*/
+		// sets up the shipment administration menu and adds it to the
+		// menu bar
+		setupShipmentAdminMenu(menuBar);
+
+		/*
+		 * // Setup some other menus. You may be asked to add functionality //
+		 * to these menus in an assignment. JMenu menu = new
+		 * JMenu("Customer Admin"); menu.setMnemonic(KeyEvent.VK_D);
+		 * menuBar.add(menu); menu = new JMenu("License Admin");
+		 * menu.setMnemonic(KeyEvent.VK_L); menuBar.add(menu); menu = new
+		 * JMenu("Exam Admin"); menu.setMnemonic(KeyEvent.VK_E);
+		 * menuBar.add(menu);
+		 */
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -162,6 +166,31 @@ public class MvbView extends JFrame {
 				ActionEvent.CTRL_MASK));
 
 		mb.add(custAdmin);
+	}
+
+	/*
+	 * Adds menu items to the Shipment menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupShipmentAdminMenu(JMenuBar mb) {
+		shipmentAdmin = new JMenu("Shipment Admin");
+
+		// when alt-s is pressed on the keyboard, the menu will appear
+		shipmentAdmin.setMnemonic(KeyEvent.VK_S);
+
+		createMenuItem(shipmentAdmin, "Insert Shipment...", KeyEvent.VK_I,
+				"Insert Shipment");
+
+		createMenuItem(shipmentAdmin, "Delete Shipment...", KeyEvent.VK_D,
+				"Delete Shipment");
+
+		JMenuItem menuItem = createMenuItem(shipmentAdmin,
+				"Show All Shipments", KeyEvent.VK_S, "Show Shipment");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+				ActionEvent.CTRL_MASK));
+
+		mb.add(shipmentAdmin);
 	}
 
 	/*
