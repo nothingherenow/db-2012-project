@@ -275,7 +275,7 @@ public class CustomerModel {
     }
     
 	/*
-     * Returns the database connection used by this branch model
+     * Returns the database connection used by this customer model
      */
     public Connection getConnection()
     {

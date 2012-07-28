@@ -215,7 +215,7 @@ public class ShipmentModel {
     }
     
 	/*
-     * Returns the database connection used by this branch model
+     * Returns the database connection used by this shipment model
      */
     public Connection getConnection()
     {

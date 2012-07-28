@@ -229,7 +229,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place shipment phone field
+	    // place shipment date field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;

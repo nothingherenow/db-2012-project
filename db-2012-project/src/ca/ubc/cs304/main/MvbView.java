@@ -10,6 +10,7 @@ import javax.swing.border.*;
 
 import ca.ubc.cs304.tables.BranchController;
 import ca.ubc.cs304.tables.CustomerController;
+import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ShipmentController;
 
 /*
@@ -183,7 +184,6 @@ public class MvbView extends JFrame {
 	}
 
 	/*
-<<<<<<< HEAD
 	 * Adds menu items to the HasSong menu and then adds the menu to the
 	 * menubar
 	 */
@@ -195,9 +195,6 @@ public class MvbView extends JFrame {
 
 		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
 				"Insert HasSong");
-
-		createMenuItem(hasSongAdmin, "Update HasSong...", KeyEvent.VK_U,
-				"Update HasSong");
 		
 		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
 				"Delete HasSong");
@@ -251,9 +248,6 @@ public class MvbView extends JFrame {
 
 		createMenuItem(leadSingerAdmin, "Insert LeadSinger...", KeyEvent.VK_I,
 				"Insert LeadSinger");
-		
-		createMenuItem(leadSingerAdmin, "Update LeadSinger...", KeyEvent.VK_U,
-				"Update LeadSinger");
 
 		createMenuItem(leadSingerAdmin, "Delete LeadSinger...", KeyEvent.VK_D,
 				"Delete LeadSinger");
@@ -522,6 +516,64 @@ public class MvbView extends JFrame {
 			menuItem = shipmentAdmin.getItem(i);
 			menuItem.addActionListener(sc);
 		}
+		
+		HasSongController hsc = new HasSongController(this);
+		
+		for (int i = 0; i < hasSongAdmin.getItemCount(); i++) {
+			menuItem = hasSongAdmin.getItem(i);
+			menuItem.addActionListener(hsc);
+		}
+		
+		// Uncomment as controllers are implemented
+		/*ItemController ic = new ItemController(this);
+		
+		for (int i = 0; i < itemAdmin.getItemCount(); i++) {
+			menuItem = itemAdmin.getItem(i);
+			menuItem.addActionListener(ic);
+		}
+		
+		LeadSingerController lsc = new LeadSingerController(this);
+		
+		for (int i = 0; i < leadSingerAdmin.getItemCount(); i++) {
+			menuItem = leadSingerAdmin.getItem(i);
+			menuItem.addActionListener(lsc);
+		}
+		
+		PurchaseItemController pic = new PurchaseItemController(this);
+		
+		for (int i = 0; i < purchaseItemAdmin.getItemCount(); i++) {
+			menuItem = purchaseItemAdmin.getItem(i);
+			menuItem.addActionListener(pic);
+		}
+		
+		PurchaseController pc = new PurchaseController(this);
+		
+		for (int i = 0; i < purchaseAdmin.getItemCount(); i++) {
+			menuItem = purchaseAdmin.getItem(i);
+			menuItem.addActionListener(pc);
+		}
+		
+		ReturnItemController ric = new ReturnItemController(this);
+		
+		for (int i = 0; i < returnItemAdmin.getItemCount(); i++) {
+			menuItem = returnItemAdmin.getItem(i);
+			menuItem.addActionListener(ric);
+		}
+		
+		ReturnController rc = new ReturnController(this);
+		
+		for (int i = 0; i < returnAdmin.getItemCount(); i++) {
+			menuItem = returnAdmin.getItem(i);
+			menuItem.addActionListener(rc);
+		}
+		
+		ShipItemController sic = new ShipItemController(this);
+		
+		for (int i = 0; i < shipItemAdmin.getItemCount(); i++) {
+			menuItem = shipItemAdmin.getItem(i);
+			menuItem.addActionListener(sic);
+		}
+		*/
 	}
 
 	public static void main(String[] args) {

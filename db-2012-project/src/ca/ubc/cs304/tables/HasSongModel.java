@@ -22,7 +22,7 @@ public class HasSongModel {
 	}
 
 	/* Insert a HasSong tuple 
-	 * upc and stitle are PRIMARY KEYS
+	 * (upc,stitle) is the primary key
 	 *  Returns true if the insert is successful; false otherwise.
 	 */
 	public boolean insertHasSong(Integer upc, String stitle){
@@ -53,7 +53,7 @@ public class HasSongModel {
 		}
 	}
 	
-	  /*
+	/*
      * Deletes a HasSong tuple.
      * Returns true if the delete is successful; false otherwise.
      */
@@ -93,6 +93,33 @@ public class HasSongModel {
     }
     
     /*
+     * Returns a ResultSet containing all customers. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null
+     * is returned.
+     */ 
+    public ResultSet showHasSong()
+    {
+	try
+	{	 
+	    ps = con.prepareStatement("SELECT h.* FROM hassong h", 
+				      ResultSet.TYPE_SCROLL_INSENSITIVE,
+				      ResultSet.CONCUR_READ_ONLY);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    return rs; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    // no need to commit or rollback since it is only a query
+
+	    return null; 
+	}
+    }
+    
+    /*
      * Returns an updatable result set for HasSong
      */ 
     public ResultSet editHasSong()
@@ -117,6 +144,82 @@ public class HasSongModel {
 	}
     }
 
+    /*
+     * Returns true if the hasSong tuple exists; false
+     * otherwise.
+     */ 
+    public boolean findHasSong(int upc, String title)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT * FROM hassong WHERE upc = ? AND title = ?");
+
+	    ps.setInt(1, upc);
+	    
+	    ps.setString(2, title);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+    
+    /*
+     * Returns the database connection used by this shipment model
+     */
+    public Connection getConnection()
+    {
+	return con; 
+    }
+    
+    /*
+     * This method allows members of this class to clean up after itself 
+     * before it is garbage collected. It is called by the garbage collector.
+     */ 
+    protected void finalize() throws Throwable
+    {
+	if (ps != null)
+	{
+	    ps.close();
+	}
+
+	// finalize() must call super.finalize() as the last thing it does
+	super.finalize();	
+    }
+
+
+    /******************************************************************************
+     * Below are the methods to add and remove ExceptionListeners.
+     * 
+     * Whenever an exception occurs in BranchModel, an exception event
+     * is sent to all registered ExceptionListeners.
+     ******************************************************************************/ 
+    
+    public void addExceptionListener(ExceptionListener l) 
+    {
+	listenerList.add(ExceptionListener.class, l);
+    }
+
+
+    public void removeExceptionListener(ExceptionListener l) 
+    {
+	listenerList.remove(ExceptionListener.class, l);
+    }
+    
 	
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
