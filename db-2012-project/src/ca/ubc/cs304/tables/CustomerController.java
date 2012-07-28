@@ -22,9 +22,9 @@ import java.sql.*;
  * which menu item the user selected. This class contains the following 
  * inner classes: CustomerInsertDialog, CustomerUpdateDialog, and 
  * CustomerDeleteDialog. CustomerInsertDialog is a dialog box that allows a 
- * user to insert a branch. CustomerUpdateDialog is a dialog box that allows 
- * a user to update the name of a branch. CustomerDeleteDialog is a dialog box 
- * that allows a user to delete a branch.
+ * user to insert a customer. CustomerUpdateDialog is a dialog box that allows 
+ * a user to update the name of a customer. CustomerDeleteDialog is a dialog box 
+ * that allows a user to delete a customer.
  *
  * CustomerController implements the ExceptionListener interface which
  * allows it to be notified of any Exceptions that occur in CustomerModel
@@ -48,7 +48,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	this.mvb = mvb;
 	customer = new CustomerModel();
 
-	// register to receive exception events from branch
+	// register to receive exception events from customer
 	customer.addExceptionListener(this);
     }
 
@@ -305,7 +305,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in BranchInsertDialog
+	 * Event handler for the OK button in CustomerInsertDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -330,8 +330,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in BranchInsertDialog and then
-	 * calls branch.insertBranch() if the fields are valid.
+	 * Validates the text fields in CustomerInsertDialog and then
+	 * calls customer.insertCustomer() if the fields are valid.
 	 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 	 * OPERATIONFAILED, VALIDATIONERROR.
 	 */ 
@@ -414,7 +414,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for updating a branch.
+     * This class creates a dialog box for updating a customer.
      */
     class CustomerUpdateDialog extends JDialog implements ActionListener
     {
@@ -552,7 +552,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in BranchUpdateDialog
+	 * Event handler for the OK button in CustomerUpdateDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -577,8 +577,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in BranchUpdateDialog and then
-	 * calls branch.branchUpdate() if the fields are valid.
+	 * Validates the text fields in CustomerUpdateDialog and then
+	 * calls customer.customerUpdate() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateUpdate()
@@ -667,7 +667,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for deleting a branch.
+     * This class creates a dialog box for deleting a customer.
      */
     class CustomerDeleteDialog extends JDialog implements ActionListener
     {
@@ -699,7 +699,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place branch id label
+	    // create and place customer id label
 	    JLabel label= new JLabel("Customer ID: ", SwingConstants.RIGHT);	    
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(0, 0, 0, 5);
@@ -707,7 +707,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place branch id field
+	    // place customer id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(0, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
@@ -715,7 +715,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    inputPane.add(custID);
 
 	    // when the return key is pressed while in the
-	    // branchID field, the action performed by the ok button
+	    // customerID field, the action performed by the ok button
 	    // is executed
 	    custID.addActionListener(this);
 	    custID.setActionCommand("OK");
@@ -757,7 +757,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in BranchDeleteDialog
+	 * Event handler for the OK button in CustomerDeleteDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -782,8 +782,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in BranchDeleteDialog and then
-	 * calls branch.branchDelete() if the fields are valid.
+	 * Validates the text fields in CustomerDeleteDialog and then
+	 * calls customer.deleteCustomer() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateDelete()
@@ -796,7 +796,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 		    cid = Integer.valueOf(custID.getText().trim()).intValue();
 
-		    // check if branch exists
+		    // check if customer exists
 		    if (!customer.findCustomer(cid))
 		    {
 			Toolkit.getDefaultToolkit().beep();
