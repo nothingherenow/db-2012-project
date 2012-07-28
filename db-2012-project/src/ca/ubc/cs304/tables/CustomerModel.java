@@ -25,16 +25,18 @@ public class CustomerModel {
 	 * Insert a Customer caddr and cphone can be null Returns true if the insert
 	 * is successful; false otherwise.
 	 */
-	public boolean insertCustomer(String cid, String cname, String cpass,
-			String caddr, Integer cphone) {
+	public boolean insertCustomer(String cname, String cpass,
+			String caddr, String cphone) {
 		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
-
-			ps.setString(1, cid);
-
-			ps.setString(2, cname);
-
-			ps.setString(3, cpass);
+			ps = con.prepareStatement("INSERT INTO customer VALUES (cust_counter.nextval,?,?,?,?)");
+			
+			ps.setString(2, cpass);
+			
+			if (caddr != null) {
+				ps.setString(3, cname);
+			} else {
+				ps.setString(3, null);
+			}
 
 			if (caddr != null) {
 				ps.setString(4, caddr);
@@ -43,9 +45,9 @@ public class CustomerModel {
 			}
 
 			if (cphone != null) {
-				ps.setInt(5, cphone.intValue());
+				ps.setString(5, cphone);
 			} else {
-				ps.setNull(5, Types.INTEGER);
+				ps.setNull(5, Types.VARCHAR);
 			}
 
 			ps.executeUpdate();
@@ -66,16 +68,74 @@ public class CustomerModel {
 			}
 		}
 	}
+	
+	/*
+     * Updates a customer
+     * Returns true if the update is successful; false otherwise.
+     *
+     * cname, caddr and cphone can be null.
+     */
+    public boolean updateCustomer(int cid, String cname, String caddr, String cphone)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("UPDATE customer SET name = ?, address = ?, phone = ? WHERE cid = ?");
+
+	    if (cname != null)
+	    {
+	    	ps.setString(1, cname);
+	    } else {
+	    	ps.setString(1, null);
+	    }
+
+	    if (caddr != null) {
+	    	ps.setString(2, caddr);
+	    } else {
+	    	ps.setString(2, null);
+	    }
+	    
+	    if (cphone != null) {
+	    	ps.setString(3, cphone);
+	    } else {
+	    	ps.setString(3, null);
+	    }
+	    
+	    ps.setInt(4, cid);
+
+	    ps.executeUpdate();
+	    
+	    con.commit();
+
+	    return true; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    
+	    try
+	    {
+		con.rollback();
+		return false; 
+	    }
+	    catch (SQLException ex2)
+	    {
+		 event = new ExceptionEvent(this, ex2.getMessage());
+		 fireExceptionGenerated(event);
+		 return false; 
+	    }
+	}
+    }
 
 	/*
 	 * Deletes a customer. Returns true if the delete is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(String cid) {
+	public boolean deleteCustomer(int cid) {
 		try {
 			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
 
-			ps.setString(1, cid);
+			ps.setInt(1, cid);
 
 			ps.executeUpdate();
 
@@ -96,6 +156,34 @@ public class CustomerModel {
 			}
 		}
 	}
+	
+    /*
+     * Returns a ResultSet containing all customers. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null
+     * is returned.
+     */ 
+    public ResultSet showCustomer()
+    {
+	try
+	{	 
+	    ps = con.prepareStatement("SELECT c.* FROM customer c", 
+				      ResultSet.TYPE_SCROLL_INSENSITIVE,
+				      ResultSet.CONCUR_READ_ONLY);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    return rs; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    // no need to commit or rollback since it is only a query
+
+	    return null; 
+	}
+    }
+
 
 	/*
 	 * Returns an updatable result set for Customer
@@ -117,7 +205,81 @@ public class CustomerModel {
 			return null;
 		}
 	}
+	
+	/*
+     * Returns true if the customer exists; false
+     * otherwise.
+     */ 
+    public boolean findCustomer(int cid)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT cid FROM customer where cid = ?");
 
+	    ps.setInt(1, cid);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+	
+	/*
+     * Returns the database connection used by this branch model
+     */
+    public Connection getConnection()
+    {
+	return con; 
+    }
+
+    /*
+     * This method allows members of this class to clean up after itself 
+     * before it is garbage collected. It is called by the garbage collector.
+     */ 
+    protected void finalize() throws Throwable
+    {
+	if (ps != null)
+	{
+	    ps.close();
+	}
+
+	// finalize() must call super.finalize() as the last thing it does
+	super.finalize();	
+    }
+
+
+    /******************************************************************************
+     * Below are the methods to add and remove ExceptionListeners.
+     * 
+     * Whenever an exception occurs in BranchModel, an exception event
+     * is sent to all registered ExceptionListeners.
+     ******************************************************************************/ 
+    
+    public void addExceptionListener(ExceptionListener l) 
+    {
+	listenerList.add(ExceptionListener.class, l);
+    }
+
+
+    public void removeExceptionListener(ExceptionListener l) 
+    {
+	listenerList.remove(ExceptionListener.class, l);
+    }
+    
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
 	 * similar to the example in the Java 2 API documentation for the
