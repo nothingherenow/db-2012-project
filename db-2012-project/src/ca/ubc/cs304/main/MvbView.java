@@ -178,6 +178,7 @@ public class MvbView extends JFrame {
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Adds menu items to the HasSong menu and then adds the menu to the
 	 * menubar
 	 */
@@ -402,7 +403,7 @@ public class MvbView extends JFrame {
 
 		admin.add(shipmentAdmin);
 	}
-	
+
 	/*
 	 * Creates a menu item and adds it to the given menu. If the menu item has
 	 * no mnemonic, set mnemonicKey to a negative integer. If it has no action
