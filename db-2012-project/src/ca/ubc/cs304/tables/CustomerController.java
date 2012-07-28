@@ -171,6 +171,7 @@ public class CustomerController implements ActionListener, ExceptionListener
      */
     class CustomerInsertDialog extends JDialog implements ActionListener
     {
+    private JTextField custID = new JTextField(12);
 	private JPasswordField password = new JPasswordField(20);
 	private JTextField custName = new JTextField(40);
 	private JTextField custAddr = new JTextField(60);
@@ -202,8 +203,23 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
+	    // create and place customer ID label
+	    JLabel label = new JLabel("Customer ID: ", SwingConstants.RIGHT);
+	    c.gridwidth = GridBagConstraints.RELATIVE;
+	    c.insets = new Insets(5, 0, 0, 5);
+	    c.anchor = GridBagConstraints.EAST;
+	    gb.setConstraints(label, c);
+	    inputPane.add(label);
+
+	    // place customer password field
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.insets = new Insets(5, 0, 0, 0);
+	    c.anchor = GridBagConstraints.WEST;
+	    gb.setConstraints(custID, c);
+	    inputPane.add(custID);
+	    
 	    // create and place customer password label
-	    JLabel label = new JLabel("Password: ", SwingConstants.RIGHT);
+	    label = new JLabel("Password: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -339,11 +355,21 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
+	    String cid;
 	    String cpassword;
 		String cname;
 		String caddr;
 		String cphone;
 
+		if (custID.getText().trim().length() != 0)
+		{
+		    cid = custID.getText().trim();
+		}
+		else
+		{
+		    return VALIDATIONERROR;
+		}
+		
 		if (String.valueOf(password.getPassword()).trim().length() != 0)
 		{
 		    cpassword = String.valueOf(password.getPassword()).trim();
@@ -382,7 +408,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		mvb.updateStatusBar("Inserting customer...");
 
-		if (customer.insertCustomer(cpassword, cname, caddr, cphone))
+		if (customer.insertCustomer(cid, cname, cpassword, caddr, cphone))
 		{
 		    mvb.updateStatusBar("Operation successful.");
 		    showAllCustomers();
@@ -585,14 +611,14 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-		int cid;
+		String cid;
 		String cname;
 		String caddr;
 		String cphone;
 
 		if (custID.getText().trim().length() != 0)
 		{
-		    cid = Integer.valueOf(custID.getText().trim()).intValue();
+		    cid = custID.getText().trim();
 
 		    // check if customer exists
 		    if (!customer.findCustomer(cid))
@@ -790,11 +816,11 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-		int cid;
+		String cid;
 
 		if (custID.getText().trim().length() != 0)
 		{
-		    cid = Integer.valueOf(custID.getText().trim()).intValue();
+		    cid = custID.getText().trim();
 
 		    // check if customer exists
 		    if (!customer.findCustomer(cid))

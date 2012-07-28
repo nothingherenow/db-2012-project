@@ -25,10 +25,12 @@ public class CustomerModel {
 	 * Insert a Customer caddr and cphone can be null Returns true if the insert
 	 * is successful; false otherwise.
 	 */
-	public boolean insertCustomer(String cname, String cpass,
+	public boolean insertCustomer(String cid, String cname, String cpass,
 			String caddr, String cphone) {
 		try {
-			ps = con.prepareStatement("INSERT INTO customer VALUES (cust_counter.nextval,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
+			
+			ps.setString(1, cid);
 			
 			ps.setString(2, cpass);
 			
@@ -75,7 +77,7 @@ public class CustomerModel {
      *
      * cname, caddr and cphone can be null.
      */
-    public boolean updateCustomer(int cid, String cname, String caddr, String cphone)
+    public boolean updateCustomer(String cid, String cname, String caddr, String cphone)
     {
 	try
 	{	
@@ -100,7 +102,7 @@ public class CustomerModel {
 	    	ps.setString(3, null);
 	    }
 	    
-	    ps.setInt(4, cid);
+	    ps.setString(4, cid);
 
 	    ps.executeUpdate();
 	    
@@ -131,11 +133,11 @@ public class CustomerModel {
 	 * Deletes a customer. Returns true if the delete is successful; false
 	 * otherwise.
 	 */
-	public boolean deleteCustomer(int cid) {
+	public boolean deleteCustomer(String cid) {
 		try {
 			ps = con.prepareStatement("DELETE FROM customer WHERE cid = ?");
 
-			ps.setInt(1, cid);
+			ps.setString(1, cid);
 
 			ps.executeUpdate();
 
@@ -210,13 +212,13 @@ public class CustomerModel {
      * Returns true if the customer exists; false
      * otherwise.
      */ 
-    public boolean findCustomer(int cid)
+    public boolean findCustomer(String cid)
     {
 	try
 	{	
 	    ps = con.prepareStatement("SELECT cid FROM customer where cid = ?");
 
-	    ps.setInt(1, cid);
+	    ps.setString(1, cid);
 
 	    ResultSet rs = ps.executeQuery();
 
@@ -238,6 +240,40 @@ public class CustomerModel {
 	}
     }
 	
+    /*
+     * Returns true if the customer exists and the password is correct; false
+     * otherwise.
+     */ 
+    public boolean validateCustomer(String cid, String password)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT cid FROM customer where cid = ? AND password = ?");
+
+	    ps.setString(1, cid);
+
+	    ps.setString(2, password);
+	    
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+    
 	/*
      * Returns the database connection used by this branch model
      */
