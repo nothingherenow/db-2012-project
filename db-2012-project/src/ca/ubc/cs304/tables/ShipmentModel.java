@@ -86,6 +86,27 @@ public class ShipmentModel {
 	}
 	
 	/*
+	 * Returns an non-updatable result set for Shipment
+	 */
+	public ResultSet showShipment() {
+		try {
+			ps = con.prepareStatement("SELECT s.* FROM shipment s",
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs;
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null;
+		}
+	}
+	
+	/*
 	 * Returns an updatable result set for Shipment
 	 */
 	public ResultSet editShipment() {
@@ -105,7 +126,82 @@ public class ShipmentModel {
 			return null;
 		}
 	}
+	
+	 /*
+     * Returns true if the shipment exists; false
+     * otherwise.
+     */ 
+    public boolean findShipment(int sid)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT sid FROM shipment where sid = ?");
 
+	    ps.setInt(1, sid);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+
+
+    /*
+     * This method allows members of this class to clean up after itself 
+     * before it is garbage collected. It is called by the garbage collector.
+     */ 
+    protected void finalize() throws Throwable
+    {
+	if (ps != null)
+	{
+	    ps.close();
+	}
+
+	// finalize() must call super.finalize() as the last thing it does
+	super.finalize();	
+    }
+    
+	/*
+     * Returns the database connection used by this branch model
+     */
+    public Connection getConnection()
+    {
+	return con; 
+    }
+
+
+    /******************************************************************************
+     * Below are the methods to add and remove ExceptionListeners.
+     * 
+     * Whenever an exception occurs in BranchModel, an exception event
+     * is sent to all registered ExceptionListeners.
+     ******************************************************************************/ 
+    
+    public void addExceptionListener(ExceptionListener l) 
+    {
+	listenerList.add(ExceptionListener.class, l);
+    }
+
+
+    public void removeExceptionListener(ExceptionListener l) 
+    {
+	listenerList.remove(ExceptionListener.class, l);
+    }
+    
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
 	 * similar to the example in the Java 2 API documentation for the
