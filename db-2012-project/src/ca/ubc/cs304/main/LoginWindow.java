@@ -354,7 +354,7 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
 
 
 	/*
-	 * Event handler for the OK button in CustomerInsertDialog
+	 * Event handler for the OK button in CustomerRegisterDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -439,10 +439,15 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
 		    cphone = null; 
 		}
 
-		if (customer.insertCustomer(cid, cname, cpassword, caddr, cphone))
+		if (customer.findCustomer(cid))
 		{
-		    JOptionPane.showMessageDialog(this, "Registration of " + cid + " complete! Login now.");
-		    return OPERATIONSUCCESS; 
+			JOptionPane.showMessageDialog(this, "Customer ID \"" + cid + "\" already exists. Try another one.");
+			return OPERATIONFAILED;
+		} 
+		else if (customer.insertCustomer(cid, cname, cpassword, caddr, cphone))
+		{
+		    JOptionPane.showMessageDialog(this, "Registration of \"" + cid + "\" complete! Login now.");
+		    return OPERATIONSUCCESS;
 		}
 		else
 		{

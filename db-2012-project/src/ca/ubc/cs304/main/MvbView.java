@@ -31,8 +31,20 @@ public class MvbView extends JFrame {
 	// the branch admin menu
 	private JMenu branchAdmin;
 
-	// the customer admin menu
+	// The top level admin menu
+	private JMenu admin;
+	
+	// the admin menus
 	private JMenu custAdmin;
+	private JMenu itemAdmin;
+	private JMenu hasSongAdmin;
+	private JMenu leadSingerAdmin;
+	private JMenu purchaseItemAdmin;
+	private JMenu purchaseAdmin;
+	private JMenu returnItemAdmin;
+	private JMenu returnAdmin;
+	private JMenu shipItemAdmin;
+	private JMenu shipmentAdmin;
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -57,13 +69,10 @@ public class MvbView extends JFrame {
 		// indent first menu
 		menuBar.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		// sets up the branch administration menu and adds it to the
+		// sets up the administration menus and adds them to the
 		// menu bar
 		setupBranchAdminMenu(menuBar);
-
-		// sets up the customer administration menu and adds it to the
-		// menu bar
-		setupCustAdminMenu(menuBar);
+		setupAdmins(menuBar);
 
 		/*// Setup some other menus. You may be asked to add functionality
 		// to these menus in an assignment.
@@ -108,6 +117,15 @@ public class MvbView extends JFrame {
 		});
 	}
 
+	private void setupAdmins(JMenuBar mb) {
+		admin = new JMenu("Admin");
+		
+		admin.setMnemonic(KeyEvent.VK_A);
+		
+		mb.add(admin);
+		setupCustAdminMenu(admin);
+	}
+	
 	/*
 	 * Adds menu items to the Branch Admin menu and then adds the menu to the
 	 * menubar
@@ -143,10 +161,10 @@ public class MvbView extends JFrame {
 	 * Adds menu items to the Customer menu and then adds the menu to the
 	 * menubar
 	 */
-	private void setupCustAdminMenu(JMenuBar mb) {
+	private void setupCustAdminMenu(JMenu admin) {
 		custAdmin = new JMenu("Customer Admin");
 
-		// when alt-b is pressed on the keyboard, the menu will appear
+		// when c is pressed on the keyboard, the menu will appear
 		custAdmin.setMnemonic(KeyEvent.VK_C);
 
 		createMenuItem(custAdmin, "Insert Customer...", KeyEvent.VK_I,
@@ -158,12 +176,87 @@ public class MvbView extends JFrame {
 		JMenuItem menuItem = createMenuItem(custAdmin, "Show All Customers",
 				KeyEvent.VK_S, "Show Customer");
 		// setup a short cut key for this menu item
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
 				ActionEvent.CTRL_MASK));
 
-		mb.add(custAdmin);
+		admin.add(custAdmin);
 	}
 
+	/*
+	 * Adds menu items to the Item menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupItemAdminMenu(JMenu admin) {
+		itemAdmin = new JMenu("Item Admin");
+
+		// when i is pressed on the keyboard, the menu will appear
+		itemAdmin.setMnemonic(KeyEvent.VK_I);
+
+		createMenuItem(itemAdmin, "Insert Item...", KeyEvent.VK_I,
+				"Insert Item");
+
+		createMenuItem(itemAdmin, "Delete Item...", KeyEvent.VK_D,
+				"Delete Item");
+
+		JMenuItem menuItem = createMenuItem(itemAdmin, "Show All Items",
+				KeyEvent.VK_S, "Show Item");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(itemAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the HasSong menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupHasSongAdminMenu(JMenu admin) {
+		hasSongAdmin = new JMenu("HasSong Admin");
+
+		// when h is pressed on the keyboard, the menu will appear
+		hasSongAdmin.setMnemonic(KeyEvent.VK_H);
+
+		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
+				"Insert HasSong");
+
+		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
+				"Delete HasSong");
+
+		JMenuItem menuItem = createMenuItem(itemAdmin, "Show All HasSongs",
+				KeyEvent.VK_S, "Show HasSong");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(hasSongAdmin);
+	}
+	
+	/*
+	 * Adds menu items to the HasSong menu and then adds the menu to the
+	 * menubar
+	 */
+	private void setupHasSongAdminMenu(JMenu admin) {
+		hasSongAdmin = new JMenu("HasSong Admin");
+
+		// when h is pressed on the keyboard, the menu will appear
+		hasSongAdmin.setMnemonic(KeyEvent.VK_H);
+
+		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
+				"Insert HasSong");
+
+		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
+				"Delete HasSong");
+
+		JMenuItem menuItem = createMenuItem(itemAdmin, "Show All HasSongs",
+				KeyEvent.VK_S, "Show HasSong");
+		// setup a short cut key for this menu item
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
+				ActionEvent.CTRL_MASK));
+
+		admin.add(hasSongAdmin);
+	}
+	
 	/*
 	 * Creates a menu item and adds it to the given menu. If the menu item has
 	 * no mnemonic, set mnemonicKey to a negative integer. If it has no action
