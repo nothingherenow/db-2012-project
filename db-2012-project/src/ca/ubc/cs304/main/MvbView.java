@@ -187,6 +187,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(custAdmin, "Edit All Customers", KeyEvent.VK_E,
+				"Edit Customer");
+		
 		admin.add(custAdmin);
 	}
 
@@ -212,6 +215,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(hasSongAdmin, "Edit All HasSongs", KeyEvent.VK_E,
+				"Edit HasSong");
+		
 		admin.add(hasSongAdmin);
 	}
 	
@@ -240,6 +246,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(itemAdmin, "Edit All Items", KeyEvent.VK_E,
+				"Edit Item");
+		
 		admin.add(itemAdmin);
 	}
 	
@@ -265,6 +274,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(leadSingerAdmin, "Edit All LeadSingers", KeyEvent.VK_E,
+				"Edit LeadSinger");
+		
 		admin.add(leadSingerAdmin);
 	}
 	
@@ -293,6 +305,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(purchaseItemAdmin, "Edit All PurchaseItems", KeyEvent.VK_E,
+				"Edit PurchaseItem");
+		
 		admin.add(purchaseItemAdmin);
 	}
 	
@@ -322,6 +337,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(purchaseAdmin, "Edit All Purchases", KeyEvent.VK_E,
+				"Edit Purchase");
+		
 		admin.add(purchaseAdmin);
 	}
 	
@@ -350,6 +368,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(returnItemAdmin, "Edit All ReturnItems", KeyEvent.VK_E,
+				"Edit ReturnItem");
+		
 		admin.add(returnItemAdmin);
 	}
 	
@@ -406,6 +427,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(shipItemAdmin, "Edit All ShipItems", KeyEvent.VK_E,
+				"Edit ShipItem");
+		
 		admin.add(shipItemAdmin);
 	}
 	
@@ -434,6 +458,9 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				ActionEvent.CTRL_MASK));
 
+		createMenuItem(shipmentAdmin, "Edit All Shipments", KeyEvent.VK_E,
+				"Edit Shipments");
+		
 		admin.add(shipmentAdmin);
 	}
 

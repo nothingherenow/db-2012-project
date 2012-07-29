@@ -11,6 +11,7 @@ public class ReturnModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
+	protected boolean commit = true;
 	
 	/*
 	 * Default constructor Precondition: The Connection object in
@@ -32,6 +33,8 @@ public class ReturnModel {
 			ps.setInt(1, rid.intValue());
 			
 			ps.executeUpdate();
+			
+			if(commit)
 			con.commit();
 			return true;
 
@@ -68,6 +71,7 @@ public class ReturnModel {
 	    
 	    ps.executeUpdate();
 	    
+	    if(commit)
 	    con.commit();
 
 	    return true; 
@@ -103,6 +107,7 @@ public class ReturnModel {
 
 			ps.executeUpdate();
 
+			if(commit)
 			con.commit();
 
 			return true;
@@ -263,4 +268,7 @@ public class ReturnModel {
 		}
 	}
 
+	public void setCommit(boolean commit) {
+		this.commit = commit;
+	}
 }

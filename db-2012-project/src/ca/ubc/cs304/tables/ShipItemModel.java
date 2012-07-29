@@ -14,6 +14,7 @@ public class ShipItemModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
+	protected boolean commit = true;
 
 	/*
 	 * Default constructor Precondition: The Connection object in
@@ -41,6 +42,8 @@ public class ShipItemModel {
 			ps.setInt(4, squantity.intValue());
 
 			ps.executeUpdate();
+			
+			if(commit)
 			con.commit();
 			return true;
 
@@ -82,6 +85,7 @@ public class ShipItemModel {
 	    
 	    ps.executeUpdate();
 	    
+	    if(commit)
 	    con.commit();
 
 	    return true; 
@@ -119,6 +123,7 @@ public class ShipItemModel {
 
 			ps.executeUpdate();
 
+			if(commit)
 			con.commit();
 
 			return true;
@@ -281,4 +286,7 @@ public class ShipItemModel {
 		}
 	}
 
+	public void setCommit(boolean commit) {
+		this.commit = commit;
+	}
 }

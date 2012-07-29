@@ -13,6 +13,7 @@ public class LeadSingerModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
+	protected boolean commit = true;
 
 	/*
 	 * Default constructor Precondition: The Connection object in
@@ -239,5 +240,9 @@ public class LeadSingerModel {
 				((ExceptionListener) listeners[i + 1]).exceptionGenerated(ex);
 			}
 		}
+	}
+	
+	public void setCommit(boolean commit) {
+		this.commit = commit;
 	}
 }

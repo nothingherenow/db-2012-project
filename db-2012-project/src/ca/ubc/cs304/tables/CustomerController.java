@@ -616,7 +616,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		String caddr;
 		String cphone;
 
-		if (custID.getText().trim().length() != 0 && isNumeric(custID.getText()))
+		if (custID.getText().trim().length() != 0)
 		{
 		    cid = custID.getText().trim();
 
@@ -818,7 +818,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    {
 		String cid;
 
-		if (custID.getText().trim().length() != 0 && isNumeric(custID.getText()))
+		if (custID.getText().trim().length() != 0)
 		{
 		    cid = custID.getText().trim();
 
@@ -854,14 +854,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
-	}
-	private boolean isNumeric(String string) {
-		try {
-			Double.valueOf(string);
-		} catch (NumberFormatException ex) {
-			return false;
-		}
-		return true;
 	}
     }
 }

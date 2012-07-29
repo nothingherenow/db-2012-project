@@ -14,6 +14,7 @@ public class PurchaseItemModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
+	protected boolean commit = true;
 	
 	/*
 	 * Default constructor Precondition: The Connection object in
@@ -37,6 +38,8 @@ public class PurchaseItemModel {
 			ps.setInt(3, piquantity.intValue());
 
 			ps.executeUpdate();
+			
+			if(commit)
 			con.commit();
 			return true;
 
@@ -75,6 +78,7 @@ public class PurchaseItemModel {
 	    
 	    ps.executeUpdate();
 	    
+	    if(commit)
 	    con.commit();
 
 	    return true; 
@@ -112,6 +116,7 @@ public class PurchaseItemModel {
 
 			ps.executeUpdate();
 
+			if(commit)
 			con.commit();
 
 			return true;
@@ -272,5 +277,9 @@ public class PurchaseItemModel {
 				((ExceptionListener) listeners[i + 1]).exceptionGenerated(ex);
 			}
 		}
+	}
+	
+	public void setCommit(boolean commit) {
+		this.commit = commit;
 	}
 }

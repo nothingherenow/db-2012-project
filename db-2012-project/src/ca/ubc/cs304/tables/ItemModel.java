@@ -14,6 +14,7 @@ public class ItemModel {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
+	protected boolean commit = true;
 
 	/*
 	 * Default constructor Precondition: The Connection object in
@@ -57,6 +58,8 @@ public class ItemModel {
 			ps.setBigDecimal(8, isellp);
 
 			ps.executeUpdate();
+			
+			if(commit)
 			con.commit();
 			return true;
 
@@ -115,6 +118,7 @@ public class ItemModel {
 	    
 	    ps.executeUpdate();
 	    
+	    if(commit)
 	    con.commit();
 
 	    return true; 
@@ -150,6 +154,7 @@ public class ItemModel {
 
 			ps.executeUpdate();
 
+			if(commit)
 			con.commit();
 
 			return true;
@@ -308,6 +313,10 @@ public class ItemModel {
 				((ExceptionListener) listeners[i + 1]).exceptionGenerated(ex);
 			}
 		}
+	}
+	
+	public void setCommit(boolean commit) {
+		this.commit = commit;
 	}
 
 }
