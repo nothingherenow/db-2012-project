@@ -776,7 +776,7 @@ public class ItemController implements ActionListener, ExceptionListener
 		int yr;
 		BigDecimal price;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 		    
@@ -1022,7 +1022,7 @@ public class ItemController implements ActionListener, ExceptionListener
 	    {
 		int upc;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 
@@ -1058,6 +1058,14 @@ public class ItemController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 }

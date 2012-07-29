@@ -303,7 +303,7 @@ public class HasSongController implements ActionListener, ExceptionListener
 		int upc;
 		String title;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim());
 		} else {
@@ -337,6 +337,14 @@ public class HasSongController implements ActionListener, ExceptionListener
 		    mvb.updateStatusBar("Operation failed.");
 		    return OPERATIONFAILED; 
 		}
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 
@@ -483,7 +491,7 @@ public class HasSongController implements ActionListener, ExceptionListener
 		int upc;
 		String title;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 		}
@@ -520,6 +528,14 @@ public class HasSongController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 }

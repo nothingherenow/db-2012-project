@@ -201,15 +201,15 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place receipt id label
-	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
+	    // create and place return id label
+	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place receipt id field
+	    // place return id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
@@ -327,14 +327,14 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	    int upc;
 	    int quantity;
 
-		if (returnID.getText().trim().length() != 0)
+		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
 		{
 		    receiptID = Integer.valueOf(returnID.getText().trim()).intValue();
 		} else {
 			return VALIDATIONERROR;
 		}
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 		 
@@ -390,9 +390,6 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 		}
 		return true;
 	}
-	private boolean isPrice(String string) {
-		return string.matches("\\d{0,8}\\.\\d\\d");
-	}
     }
 
 
@@ -431,15 +428,15 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place receipt id label
-	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
+	    // create and place return id label
+	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place receipt id field
+	    // place return id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
@@ -552,13 +549,13 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	{
 		try
 	    {
-			int receiptID;
+			int retID;
 		    int upc;
 		    int quantity;
 
 		if (returnID.getText().trim().length() != 0)
 		{
-		    receiptID = Integer.valueOf(returnID.getText().trim()).intValue();
+		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
 		} else {
 			return VALIDATIONERROR;
 		}
@@ -568,10 +565,10 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 		 
 		    // check if returnItem exists
-		    if (!returnItem.findReturnItem(receiptID, upc))
+		    if (!returnItem.findReturnItem(retID, upc))
 		    {
 		    	Toolkit.getDefaultToolkit().beep();
-		    	mvb.updateStatusBar("ReturnItem (" + receiptID + "," + upc + ") does not exist!");
+		    	mvb.updateStatusBar("ReturnItem (" + retID + "," + upc + ") does not exist!");
 		    	return OPERATIONFAILED; 
 		    }
 		}
@@ -591,7 +588,7 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 		
 		mvb.updateStatusBar("Updating returnItem...");
 
-		if (returnItem.updateReturnItem(receiptID, upc, quantity))
+		if (returnItem.updateReturnItem(retID, upc, quantity))
 		{
 		    mvb.updateStatusBar("Operation successful.");
 		    showAllReturnItems();
@@ -618,10 +615,6 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 			return false;
 		}
 		return true;
-	}
-	private boolean isPrice(String string) {
-		// match 0-8 decimals, then a period, and then two more decimals
-		return string.matches("\\d{0,8}\\.\\d\\d");
 	}
     }
 
@@ -766,27 +759,27 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-	    int receiptID;
+	    int retID;
 		int upc;
 
-		if (returnID.getText().trim().length() != 0)
+		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
 		{
-		    receiptID = Integer.valueOf(returnID.getText().trim()).intValue();
+		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
 		}
 		else
 		{
 		    return VALIDATIONERROR; 
 		}
 		
-		if (itemUPC.getText().trim().length() != 0)
+		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
 		{
 		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
 
 		    // check if returnItem tuple exists
-		    if (!returnItem.findReturnItem(receiptID, upc))
+		    if (!returnItem.findReturnItem(retID, upc))
 		    {
 			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("ReturnItem with UPC " + upc + " does not exist!");
+			mvb.updateStatusBar("ReturnItem (" + retID + "," + upc + ") does not exist!");
 			return OPERATIONFAILED; 
 		    }
 		}
@@ -797,7 +790,7 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	       
 		mvb.updateStatusBar("Deleting returnItem...");
 
-		if (returnItem.deleteReturnItem(receiptID, upc))
+		if (returnItem.deleteReturnItem(retID, upc))
 		{
 		    mvb.updateStatusBar("Operation successful.");
 		    showAllReturnItems();
@@ -814,6 +807,14 @@ public class ReturnItemController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 }

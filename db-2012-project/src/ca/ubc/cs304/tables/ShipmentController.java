@@ -519,7 +519,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 		String sname;
 		Date sdate;
 
-		if (shipID.getText().trim().length() != 0)
+		if (shipID.getText().trim().length() != 0 && isNumeric(shipID.getText().trim()))
 		{
 		    sid = Integer.valueOf(shipID.getText().trim()).intValue();
 
@@ -583,6 +583,14 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 
@@ -713,7 +721,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 	    {
 		int sid;
 
-		if (shipID.getText().trim().length() != 0)
+		if (shipID.getText().trim().length() != 0 && isNumeric(shipID.getText().trim()))
 		{
 		    sid = Integer.valueOf(shipID.getText().trim()).intValue();
 
@@ -750,5 +758,14 @@ public class ShipmentController implements ActionListener, ExceptionListener
 		return VALIDATIONERROR; 
 	    }
 	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
+	}
     }
+    
 }

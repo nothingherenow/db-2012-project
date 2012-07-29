@@ -24,22 +24,14 @@ public class ReturnModel {
 	 * Insert a Return. Returns true if the insert is successful; false
 	 * otherwise.
 	 */
-	public boolean insertReturn(Integer retid, Date rdate, Integer rid, String rname) {
+	public boolean insertReturn(Integer retid, Integer rid) {
 		try {
-			ps = con.prepareStatement("INSERT INTO return VALUES (?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO return VALUES (?,sysdate,?)");
 
 			ps.setInt(1, retid.intValue());
 
-			ps.setDate(2, rdate);
-
-			ps.setInt(3, rid.intValue());
+			ps.setInt(2, rid.intValue());
 			
-			if (rname != null) {
-				ps.setString(4, rname);
-			} else {
-				ps.setString(4, null);
-			}
-
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -58,6 +50,48 @@ public class ReturnModel {
 			}
 		}
 	}
+	
+	/*
+     * Updates a return.
+     * Returns true if the update is successful; false otherwise.
+     *
+     * All arguments cannot be null.
+     */
+    public boolean updateReturn(int retID, int receiptID)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("UPDATE return SET receiptID = ? WHERE retID = ?");
+
+	    ps.setInt(1, retID);
+	    
+	    ps.setInt(2, receiptID);
+	    
+	    ps.executeUpdate();
+	    
+	    con.commit();
+
+	    return true; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    
+	    try
+	    {
+		con.rollback();
+		return false; 
+	    }
+	    catch (SQLException ex2)
+	    {
+		 event = new ExceptionEvent(this, ex2.getMessage());
+		 fireExceptionGenerated(event);
+		 return false; 
+	    }
+	}
+    }
+	
 	/*
 	 * Deletes a Return tuple. Returns true if the delete is successful; false
 	 * otherwise.
@@ -87,6 +121,34 @@ public class ReturnModel {
 			}
 		}
 	}
+	
+	/*
+     * Returns a ResultSet containing all Returns. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null
+     * is returned.
+     */ 
+    public ResultSet showReturn()
+    {
+	try
+	{	 
+	    ps = con.prepareStatement("SELECT r.* FROM return r", 
+				      ResultSet.TYPE_SCROLL_INSENSITIVE,
+				      ResultSet.CONCUR_READ_ONLY);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    return rs; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    // no need to commit or rollback since it is only a query
+
+	    return null; 
+	}
+    }
+	
 	/*
 	 * Returns an updatable result set for Return
 	 */
@@ -108,6 +170,80 @@ public class ReturnModel {
 		}
 	}
 
+	/*
+     * Returns true if the PurchaseItem tuple exists; false
+     * otherwise.
+     */ 
+    public boolean findReturn(int retID)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT * FROM purchaseitem WHERE retID = ?");
+
+	    ps.setInt(1, retID);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+	
+	/*
+     * Returns the database connection used by this customer model
+     */
+    public Connection getConnection()
+    {
+	return con; 
+    }
+	
+	/*
+     * This method allows members of this class to clean up after itself 
+     * before it is garbage collected. It is called by the garbage collector.
+     */ 
+    protected void finalize() throws Throwable
+    {
+	if (ps != null)
+	{
+	    ps.close();
+	}
+
+	// finalize() must call super.finalize() as the last thing it does
+	super.finalize();	
+    }
+
+
+    /******************************************************************************
+     * Below are the methods to add and remove ExceptionListeners.
+     * 
+     * Whenever an exception occurs in BranchModel, an exception event
+     * is sent to all registered ExceptionListeners.
+     ******************************************************************************/ 
+    
+    public void addExceptionListener(ExceptionListener l) 
+    {
+	listenerList.add(ExceptionListener.class, l);
+    }
+
+
+    public void removeExceptionListener(ExceptionListener l) 
+    {
+	listenerList.remove(ExceptionListener.class, l);
+    }
+	
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
 	 * similar to the example in the Java 2 API documentation for the

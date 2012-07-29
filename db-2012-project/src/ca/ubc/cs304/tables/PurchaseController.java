@@ -927,7 +927,7 @@ public class PurchaseController implements ActionListener, ExceptionListener
 	    {
 		int receiptID;
 
-		if (recID.getText().trim().length() != 0)
+		if (recID.getText().trim().length() != 0 && isNumeric(recID.getText().trim()))
 		{
 		    receiptID = Integer.valueOf(recID.getText().trim()).intValue();
 
@@ -963,6 +963,14 @@ public class PurchaseController implements ActionListener, ExceptionListener
 	    {
 		return VALIDATIONERROR; 
 	    }
+	}
+	private boolean isNumeric(String string) {
+		try {
+			Double.valueOf(string);
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+		return true;
 	}
     }
 }

@@ -71,7 +71,7 @@ public class PurchaseItemModel {
 	    
 	    ps.setInt(2, receiptID);
 	    
-	    ps.setInt(1, upc);
+	    ps.setInt(3, upc);
 	    
 	    ps.executeUpdate();
 	    

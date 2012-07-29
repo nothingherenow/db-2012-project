@@ -1,6 +1,6 @@
 package ca.ubc.cs304.tables;
 
-// File: PurchaseItemController.java
+// File: ReturnController.java
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,39 +18,39 @@ import java.sql.*;
 
 
 /*
- * PurchaseItemController is a control class that handles action events 
- * on the PurchaseItem Admin menu. It also updates the GUI based on 
+ * ReturnController is a control class that handles action events 
+ * on the Return Admin menu. It also updates the GUI based on 
  * which menu item the user selected. This class contains the following 
- * inner classes: PurchaseItemInsertDialog, PurchaseItemUpdateDialog, and 
- * PurchaseItemDeleteDialog. PurchaseItemInsertDialog is a dialog box that allows a 
- * user to insert a item. PurchaseItemUpdateDialog is a dialog box that allows 
- * a user to an item. PurchaseItemDeleteDialog is a dialog box 
+ * inner classes: ReturnInsertDialog, ReturnUpdateDialog, and 
+ * ReturnDeleteDialog. ReturnInsertDialog is a dialog box that allows a 
+ * user to insert a item. ReturnUpdateDialog is a dialog box that allows 
+ * a user to an item. ReturnDeleteDialog is a dialog box 
  * that allows a user to delete an item.
  *
- * PurchaseItemController implements the ExceptionListener interface which
- * allows it to be notified of any Exceptions that occur in PurchaseItemModel
- * (PurchaseItemModel contains the database transaction functions). It is defined
- * in PurchaseItemModel.java. The ExceptionListener interface is defined in 
- * ExceptionListener.java. When an Exception occurs in PurchaseItemModel, 
- * PurchaseItemController will update the status text area of MvbView. 
+ * ReturnController implements the ExceptionListener interface which
+ * allows it to be notified of any Exceptions that occur in ReturnModel
+ * (ReturnModel contains the database transaction functions). It is defined
+ * in ReturnModel.java. The ExceptionListener interface is defined in 
+ * ExceptionListener.java. When an Exception occurs in ReturnModel, 
+ * ReturnController will update the status text area of MvbView. 
  */
-public class PurchaseItemController implements ActionListener, ExceptionListener
+public class ReturnController implements ActionListener, ExceptionListener
 {
     private MvbView mvb = null;
-    private PurchaseItemModel purchaseItem = null; 
+    private ReturnModel ret = null; 
 
     // constants used for describing the outcome of an operation
     public static final int OPERATIONSUCCESS = 0;
     public static final int OPERATIONFAILED = 1;
     public static final int VALIDATIONERROR = 2; 
     
-    public PurchaseItemController(MvbView mvb)
+    public ReturnController(MvbView mvb)
     {
 	this.mvb = mvb;
-	purchaseItem = new PurchaseItemModel();
+	ret = new ReturnModel();
 
-	// register to receive exception events from purchaseItem
-	purchaseItem.addExceptionListener(this);
+	// register to receive exception events from ret
+	ret.addExceptionListener(this);
     }
 
 
@@ -63,42 +63,42 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	String actionCommand = e.getActionCommand();
 
 	// you cannot use == for string comparisons
-	if (actionCommand.equals("Insert PurchaseItem"))
+	if (actionCommand.equals("Insert Return"))
 	{
-	    PurchaseItemInsertDialog iDialog = new PurchaseItemInsertDialog(mvb);
+	    ReturnInsertDialog iDialog = new ReturnInsertDialog(mvb);
 	    iDialog.pack();
 	    mvb.centerWindow(iDialog);
 	    iDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Update PurchaseItem"))
+	if (actionCommand.equals("Update Return"))
 	{
-	    PurchaseItemUpdateDialog uDialog = new PurchaseItemUpdateDialog(mvb);
+	    ReturnUpdateDialog uDialog = new ReturnUpdateDialog(mvb);
 	    uDialog.pack();
 	    mvb.centerWindow(uDialog);
 	    uDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Delete PurchaseItem"))
+	if (actionCommand.equals("Delete Return"))
 	{
-	    PurchaseItemDeleteDialog dDialog = new PurchaseItemDeleteDialog(mvb);
+	    ReturnDeleteDialog dDialog = new ReturnDeleteDialog(mvb);
 	    dDialog.pack();
 	    mvb.centerWindow(dDialog);
 	    dDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Show PurchaseItem"))
+	if (actionCommand.equals("Show Return"))
 	{
-	    showAllPurchaseItems();
+	    showAllReturns();
 	    return; 
 	}
 
-	if (actionCommand.equals("Edit PurchaseItem"))
+	if (actionCommand.equals("Edit Return"))
 	{
-	    editAllPurchaseItems();
+	    editAllReturns();
 	    return; 
 	}	
     }
@@ -128,16 +128,16 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This method displays all purchaseItem tuples in a non-editable JTable
+     * This method displays all ret tuples in a non-editable JTable
      */
-    private void showAllPurchaseItems()
+    private void showAllReturns()
     {
-	ResultSet rs = purchaseItem.showPurchaseItem();
+	ResultSet rs = ret.showReturn();
 	
 	// CustomTableModel maintains the result set's data, e.g., if  
 	// the result set is updatable, it will update the database
 	// when the table's data is modified.  
-	CustomTableModel model = new CustomTableModel(purchaseItem.getConnection(), rs);
+	CustomTableModel model = new CustomTableModel(ret.getConnection(), rs);
 	CustomTable data = new CustomTable(model);
 
 	// register to be notified of any exceptions that occur in the model and table
@@ -151,13 +151,13 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This method displays all purchaseItem tuples in an editable JTable
+     * This method displays all ret tuples in an editable JTable
      */
-    private void editAllPurchaseItems()
+    private void editAllReturns()
     {
-	ResultSet rs = purchaseItem.editPurchaseItem();
+	ResultSet rs = ret.editReturn();
 	
-	CustomTableModel model = new CustomTableModel(purchaseItem.getConnection(), rs);
+	CustomTableModel model = new CustomTableModel(ret.getConnection(), rs);
 	CustomTable data = new CustomTable(model);
 
 	model.addExceptionListener(this);
@@ -168,20 +168,19 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for inserting a purchaseItem.
+     * This class creates a dialog box for inserting a ret.
      */
-    class PurchaseItemInsertDialog extends JDialog implements ActionListener
+    class ReturnInsertDialog extends JDialog implements ActionListener
     {
-    private JTextField piReceiptID = new JTextField(10);
-	private JTextField itemUPC = new JTextField(10);
-	private JTextField itemQuantity = new JTextField(10);
+    private JTextField returnID = new JTextField(10);
+	private JTextField receiptID = new JTextField(10);
 	
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public PurchaseItemInsertDialog(JFrame parent)
+	public ReturnInsertDialog(JFrame parent)
 	{
-	    super(parent, "Insert PurchaseItem", true);
+	    super(parent, "Insert Return", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -191,7 +190,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    // this panel will contain the text field labels and the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "PurchaseItem Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Return Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 	 
 	    // add the text field labels and text fields to inputPane
@@ -201,56 +200,41 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place receipt id label
-	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
+	    // create and place return id label
+	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place receipt id field
+	    // place return id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(piReceiptID, c);
-	    inputPane.add(piReceiptID);
+	    gb.setConstraints(returnID, c);
+	    inputPane.add(returnID);
 	    
-	    // create and place item UPC label
-	    label = new JLabel("Item UPC: ", SwingConstants.RIGHT);
+	    // create and place receipt id label
+	    label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item UPC field
+	    // place receipt ID field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
-
-	    // create and place item quantity label
-	    label = new JLabel("Item quantity: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item quantity field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemQuantity, c);
-	    inputPane.add(itemQuantity);
+	    gb.setConstraints(receiptID, c);
+	    inputPane.add(receiptID);
 	    
 	    // when the return key is pressed in the last field
 	    // of this form, the action performed by the ok button
 	    // is executed
-	    itemQuantity.addActionListener(this);
-	    itemQuantity.setActionCommand("OK");
+	    receiptID.addActionListener(this);
+	    receiptID.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();
@@ -289,7 +273,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in PurchaseItemInsertDialog
+	 * Event handler for the OK button in ReturnInsertDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -314,8 +298,8 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in PurchaseItemInsertDialog and then
-	 * calls purchaseItem.insertPurchaseItem() if the fields are valid.
+	 * Validates the text fields in ReturnInsertDialog and then
+	 * calls ret.insertReturn() if the fields are valid.
 	 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 	 * OPERATIONFAILED, VALIDATIONERROR.
 	 */ 
@@ -323,49 +307,39 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-	    int receiptID;
-	    int upc;
-	    int quantity;
+	    int retID;
+	    int recID;
 
-		if (piReceiptID.getText().trim().length() != 0 && isNumeric(piReceiptID.getText().trim()))
+		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
 		{
-		    receiptID = Integer.valueOf(piReceiptID.getText().trim()).intValue();
+		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
+		    
+		    // check for duplicates
+		    if (ret.findReturn(retID))
+		    {
+			Toolkit.getDefaultToolkit().beep();
+			mvb.updateStatusBar("Return with ID " + retID + " already exists!");
+			return OPERATIONFAILED; 
+		    }
 		} else {
 			return VALIDATIONERROR;
 		}
 
-		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
+		if (receiptID.getText().trim().length() != 0 && isNumeric(receiptID.getText().trim()))
 		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
-		 
-		    // check for duplicates
-		    if (purchaseItem.findPurchaseItem(receiptID, upc))
-		    {
-			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("PurchaseItem (" + receiptID + "," + upc + ") already exists!");
-			return OPERATIONFAILED; 
-		    }
+		    recID = Integer.valueOf(receiptID.getText().trim()).intValue();
 		}
 		else
 		{
 		    return VALIDATIONERROR; 
 		}
 
-		if (itemQuantity.getText().trim().length() != 0 && isNumeric(itemQuantity.getText().trim()))
-		{
-		    quantity = Integer.valueOf(itemQuantity.getText().trim()).intValue();
-		}
-		else
-		{
-		    return VALIDATIONERROR; 
-		}
+		mvb.updateStatusBar("Inserting return...");
 
-		mvb.updateStatusBar("Inserting purchaseItem...");
-
-		if (purchaseItem.insertPurchaseItem(receiptID, upc, quantity))
+		if (ret.insertReturn(retID, recID))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllPurchaseItems();
+		    showAllReturns();
 		    return OPERATIONSUCCESS; 
 		}
 		else
@@ -394,20 +368,19 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for updating a purchaseItem.
+     * This class creates a dialog box for updating a ret.
      */
-    class PurchaseItemUpdateDialog extends JDialog implements ActionListener
+    class ReturnUpdateDialog extends JDialog implements ActionListener
     {
-    	private JTextField piReceiptID = new JTextField(10);
-    	private JTextField itemUPC = new JTextField(10);
-    	private JTextField itemQuantity = new JTextField(10);
+    	private JTextField returnID = new JTextField(10);
+    	private JTextField receiptID = new JTextField(10);
 	
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public PurchaseItemUpdateDialog(JFrame parent)
+	public ReturnUpdateDialog(JFrame parent)
 	{
-	    super(parent, "Update PurchaseItem Quantity", true);
+	    super(parent, "Update Return", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -418,7 +391,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    // the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "PurchaseItem Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Return Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 	 
 	    // add the text field labels and text fields to inputPane
@@ -428,22 +401,22 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place receipt id label
-	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
+	    // create and place return id label
+	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place receipt id field
+	    // place return id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(piReceiptID, c);
-	    inputPane.add(piReceiptID);
+	    gb.setConstraints(returnID, c);
+	    inputPane.add(returnID);
 	    
-	    // create and place item UPC label
+	    // create and place receipt ID label
 	    label = new JLabel("Item UPC: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
@@ -451,33 +424,18 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item UPC field
+	    // place receipt ID field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
-
-	    // create and place item quantity label
-	    label = new JLabel("New Item quantity: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item quantity field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemQuantity, c);
-	    inputPane.add(itemQuantity);
+	    gb.setConstraints(receiptID, c);
+	    inputPane.add(receiptID);
 	    
 	    // when the return key is pressed in the last field
 	    // of this form, the action performed by the ok button
 	    // is executed
-	    itemQuantity.addActionListener(this);
-	    itemQuantity.setActionCommand("OK");
+	    receiptID.addActionListener(this);
+	    receiptID.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();
@@ -516,7 +474,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in PurchaseItemUpdateDialog
+	 * Event handler for the OK button in ReturnUpdateDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -541,57 +499,47 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in PurchaseItemUpdateDialog and then
-	 * calls purchaseItem.updatePurchaseItem() if the fields are valid.
+	 * Validates the text fields in ReturnUpdateDialog and then
+	 * calls ret.updateReturn() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateUpdate()
 	{
 		try
 	    {
-			int receiptID;
-		    int upc;
-		    int quantity;
+			int retID;
+		    int recID;
 
-		if (piReceiptID.getText().trim().length() != 0 && isNumeric(piReceiptID.getText().trim()))
+		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
 		{
-		    receiptID = Integer.valueOf(piReceiptID.getText().trim()).intValue();
+		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
+		    
+		    // check if return exists
+		    if (!ret.findReturn(retID))
+		    {
+		    	Toolkit.getDefaultToolkit().beep();
+		    	mvb.updateStatusBar("Return with ID " + retID + " does not exist!");
+		    	return OPERATIONFAILED; 
+		    }
 		} else {
 			return VALIDATIONERROR;
 		}
 
-		if (itemUPC.getText().trim().length() != 0 && isNumeric(piReceiptID.getText().trim()))
+		if (receiptID.getText().trim().length() != 0 && isNumeric(receiptID.getText().trim()))
 		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
-		 
-		    // check if purchaseItem exists
-		    if (!purchaseItem.findPurchaseItem(receiptID, upc))
-		    {
-		    	Toolkit.getDefaultToolkit().beep();
-		    	mvb.updateStatusBar("PurchaseItem (" + receiptID + "," + upc + ") does not exist!");
-		    	return OPERATIONFAILED; 
-		    }
-		}
-		else
-		{
-		    return VALIDATIONERROR; 
-		}
-
-		if (itemQuantity.getText().trim().length() != 0 && isNumeric(itemQuantity.getText().trim()))
-		{
-		    quantity = Integer.valueOf(itemQuantity.getText().trim()).intValue();
+		    recID = Integer.valueOf(receiptID.getText().trim()).intValue();
 		}
 		else
 		{
 		    return VALIDATIONERROR; 
 		}
 		
-		mvb.updateStatusBar("Updating purchaseItem...");
+		mvb.updateStatusBar("Updating return...");
 
-		if (purchaseItem.updatePurchaseItem(receiptID, upc, quantity))
+		if (ret.updateReturn(retID, recID))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllPurchaseItems();
+		    showAllReturns();
 		    return OPERATIONSUCCESS; 
 		}
 		else
@@ -620,20 +568,20 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for deleting a purchaseItem.
+     * This class creates a dialog box for deleting a ret.
      */
-    class PurchaseItemDeleteDialog extends JDialog implements ActionListener
+    class ReturnDeleteDialog extends JDialog implements ActionListener
     {
-	private JTextField piReceiptID = new JTextField(10);
+	private JTextField returnID = new JTextField(10);
 	private JTextField itemUPC = new JTextField(10);
 	
 
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public PurchaseItemDeleteDialog(JFrame parent)
+	public ReturnDeleteDialog(JFrame parent)
 	{
-	    super(parent, "Delete PurchaseItem", true);
+	    super(parent, "Delete Return", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -643,7 +591,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    // this panel contains the text field labels and the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "PurchaseItem Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Return Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 
 	    // add the text field labels and text fields to inputPane
@@ -665,8 +613,8 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(0, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(piReceiptID, c);
-	    inputPane.add(piReceiptID);
+	    gb.setConstraints(returnID, c);
+	    inputPane.add(returnID);
 	    
 	    // create and place upc label
 	    label = new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
@@ -684,7 +632,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 	    inputPane.add(itemUPC);
 
 	    // when the return key is pressed while in the
-	    // purchaseItemID field, the action performed by the ok button
+	    // retID field, the action performed by the ok button
 	    // is executed
 	    itemUPC.addActionListener(this);
 	    itemUPC.setActionCommand("OK");
@@ -726,7 +674,7 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in PurchaseItemDeleteDialog
+	 * Event handler for the OK button in ReturnDeleteDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -751,35 +699,25 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in PurchaseItemDeleteDialog and then
-	 * calls purchaseItem.deletePurchaseItem() if the fields are valid.
+	 * Validates the text fields in ReturnDeleteDialog and then
+	 * calls ret.deleteReturn() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateDelete()
 	{
 	    try
 	    {
-	    int receiptID;
-		int upc;
+	    int retID;
 
-		if (piReceiptID.getText().trim().length() != 0 && isNumeric(piReceiptID.getText().trim()))
+		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
 		{
-		    receiptID = Integer.valueOf(piReceiptID.getText().trim()).intValue();
-		}
-		else
-		{
-		    return VALIDATIONERROR; 
-		}
-		
-		if (itemUPC.getText().trim().length() != 0 && isNumeric(itemUPC.getText().trim()))
-		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
-
-		    // check if purchaseItem tuple exists
-		    if (!purchaseItem.findPurchaseItem(receiptID, upc))
+		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
+		    
+		    // check if return exists
+		    if (!ret.findReturn(retID))
 		    {
 			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("PurchaseItem with UPC " + upc + " does not exist!");
+			mvb.updateStatusBar("Return with ID " + retID + " does not exist!");
 			return OPERATIONFAILED; 
 		    }
 		}
@@ -788,12 +726,12 @@ public class PurchaseItemController implements ActionListener, ExceptionListener
 		    return VALIDATIONERROR; 
 		}
 	       
-		mvb.updateStatusBar("Deleting purchaseItem...");
+		mvb.updateStatusBar("Deleting return...");
 
-		if (purchaseItem.deletePurchaseItem(receiptID, upc))
+		if (ret.deleteReturn(retID))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllPurchaseItems();
+		    showAllReturns();
 		    return OPERATIONSUCCESS;
 		}
 		else
