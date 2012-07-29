@@ -210,7 +210,7 @@ public class LeadSingerController implements ActionListener, ExceptionListener
 	    gb.setConstraints(itemUPC, c);
 	    inputPane.add(itemUPC);
 
-	    // create and place song title label
+	    // create and place lead singer label
 	    label = new JLabel("Leading Singer: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
@@ -218,7 +218,7 @@ public class LeadSingerController implements ActionListener, ExceptionListener
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place song title field
+	    // place lead singer field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;

@@ -13,6 +13,8 @@ import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ItemController;
 import ca.ubc.cs304.tables.LeadSingerController;
+import ca.ubc.cs304.tables.PurchaseController;
+import ca.ubc.cs304.tables.PurchaseItemController;
 import ca.ubc.cs304.tables.ShipmentController;
 
 /*
@@ -540,8 +542,7 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(lsc);
 		}
 		
-		// Uncomment as controllers are implemented
-		/*PurchaseItemController pic = new PurchaseItemController(this);
+		PurchaseItemController pic = new PurchaseItemController(this);
 		
 		for (int i = 0; i < purchaseItemAdmin.getItemCount(); i++) {
 			menuItem = purchaseItemAdmin.getItem(i);
@@ -555,7 +556,8 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(pc);
 		}
 		
-		ReturnItemController ric = new ReturnItemController(this);
+		// Uncomment as controllers are implemented
+		/*ReturnItemController ric = new ReturnItemController(this);
 		
 		for (int i = 0; i < returnItemAdmin.getItemCount(); i++) {
 			menuItem = returnItemAdmin.getItem(i);

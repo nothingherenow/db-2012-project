@@ -1,6 +1,6 @@
 package ca.ubc.cs304.tables;
 
-// File: ItemController.java
+// File: PurchaseController.java
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,42 +15,44 @@ import ca.ubc.cs304.main.MvbView;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 /*
- * ItemController is a control class that handles action events 
- * on the Item Admin menu. It also updates the GUI based on 
+ * PurchaseController is a control class that handles action events 
+ * on the Purchase Admin menu. It also updates the GUI based on 
  * which menu item the user selected. This class contains the following 
- * inner classes: ItemInsertDialog, ItemUpdateDialog, and 
- * ItemDeleteDialog. ItemInsertDialog is a dialog box that allows a 
- * user to insert a item. ItemUpdateDialog is a dialog box that allows 
- * a user to an item. ItemDeleteDialog is a dialog box 
- * that allows a user to delete an item.
+ * inner classes: PurchaseInsertDialog, PurchaseUpdateDialog, and 
+ * PurchaseDeleteDialog. PurchaseInsertDialog is a dialog box that allows a 
+ * user to insert a purchase. PurchaseUpdateDialog is a dialog box that allows 
+ * a user to a purchase. PurchaseDeleteDialog is a dialog box 
+ * that allows a user to delete a purchase.
  *
- * ItemController implements the ExceptionListener interface which
- * allows it to be notified of any Exceptions that occur in ItemModel
- * (ItemModel contains the database transaction functions). It is defined
- * in ItemModel.java. The ExceptionListener interface is defined in 
- * ExceptionListener.java. When an Exception occurs in ItemModel, 
- * ItemController will update the status text area of MvbView. 
+ * PurchaseController implements the ExceptionListener interface which
+ * allows it to be notified of any Exceptions that occur in PurchaseModel
+ * (PurchaseModel contains the database transaction functions). It is defined
+ * in PurchaseModel.java. The ExceptionListener interface is defined in 
+ * ExceptionListener.java. When an Exception occurs in PurchaseModel, 
+ * PurchaseController will update the status text area of MvbView. 
  */
-public class ItemController implements ActionListener, ExceptionListener
+public class PurchaseController implements ActionListener, ExceptionListener
 {
     private MvbView mvb = null;
-    private ItemModel item = null; 
+    private PurchaseModel purchase = null; 
 
     // constants used for describing the outcome of an operation
     public static final int OPERATIONSUCCESS = 0;
     public static final int OPERATIONFAILED = 1;
     public static final int VALIDATIONERROR = 2; 
     
-    public ItemController(MvbView mvb)
+    public PurchaseController(MvbView mvb)
     {
 	this.mvb = mvb;
-	item = new ItemModel();
+	purchase = new PurchaseModel();
 
-	// register to receive exception events from item
-	item.addExceptionListener(this);
+	// register to receive exception events from purchase
+	purchase.addExceptionListener(this);
     }
 
 
@@ -63,42 +65,42 @@ public class ItemController implements ActionListener, ExceptionListener
 	String actionCommand = e.getActionCommand();
 
 	// you cannot use == for string comparisons
-	if (actionCommand.equals("Insert Item"))
+	if (actionCommand.equals("Insert Purchase"))
 	{
-	    ItemInsertDialog iDialog = new ItemInsertDialog(mvb);
+	    PurchaseInsertDialog iDialog = new PurchaseInsertDialog(mvb);
 	    iDialog.pack();
 	    mvb.centerWindow(iDialog);
 	    iDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Update Item"))
+	if (actionCommand.equals("Update Purchase"))
 	{
-	    ItemUpdateDialog uDialog = new ItemUpdateDialog(mvb);
+	    PurchaseUpdateDialog uDialog = new PurchaseUpdateDialog(mvb);
 	    uDialog.pack();
 	    mvb.centerWindow(uDialog);
 	    uDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Delete Item"))
+	if (actionCommand.equals("Delete Purchase"))
 	{
-	    ItemDeleteDialog dDialog = new ItemDeleteDialog(mvb);
+	    PurchaseDeleteDialog dDialog = new PurchaseDeleteDialog(mvb);
 	    dDialog.pack();
 	    mvb.centerWindow(dDialog);
 	    dDialog.setVisible(true);
 	    return; 
 	}
 
-	if (actionCommand.equals("Show Item"))
+	if (actionCommand.equals("Show Purchase"))
 	{
-	    showAllItems();
+	    showAllPurchases();
 	    return; 
 	}
 
-	if (actionCommand.equals("Edit Item"))
+	if (actionCommand.equals("Edit Purchase"))
 	{
-	    editAllItems();
+	    editAllPurchases();
 	    return; 
 	}	
     }
@@ -128,16 +130,16 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This method displays all items in a non-editable JTable
+     * This method displays all purchases in a non-editable JTable
      */
-    private void showAllItems()
+    private void showAllPurchases()
     {
-	ResultSet rs = item.showItem();
+	ResultSet rs = purchase.showPurchase();
 	
 	// CustomTableModel maintains the result set's data, e.g., if  
 	// the result set is updatable, it will update the database
 	// when the table's data is modified.  
-	CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+	CustomTableModel model = new CustomTableModel(purchase.getConnection(), rs);
 	CustomTable data = new CustomTable(model);
 
 	// register to be notified of any exceptions that occur in the model and table
@@ -151,13 +153,13 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This method displays all items in an editable JTable
+     * This method displays all purchases in an editable JTable
      */
-    private void editAllItems()
+    private void editAllPurchases()
     {
-	ResultSet rs = item.editItem();
+	ResultSet rs = purchase.editPurchase();
 	
-	CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+	CustomTableModel model = new CustomTableModel(purchase.getConnection(), rs);
 	CustomTable data = new CustomTable(model);
 
 	model.addExceptionListener(this);
@@ -168,25 +170,22 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
     /*
-     * This class creates a dialog box for inserting a item.
+     * This class creates a dialog box for inserting a purchase.
      */
-    class ItemInsertDialog extends JDialog implements ActionListener
+    class PurchaseInsertDialog extends JDialog implements ActionListener
     {
-    private JTextField itemUPC = new JTextField(10);
-	private JTextField title = new JTextField(60);
-	private JTextField type = new JTextField(3);
-	private JTextField category = new JTextField(60);
-	private JTextField stock = new JTextField(10);
-	private JTextField company = new JTextField(30);
-	private JTextField year = new JTextField(4);
-	private JTextField sellPrice = new JTextField(13);
+	private JTextField custID = new JTextField(12);
+	private JTextField cardNumber = new JTextField(16);
+	private JTextField cardExpiry = new JTextField(5);
+	private JTextField purExpected = new JTextField(10);
+	private JTextField purDelivered = new JTextField(10);
 	
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public ItemInsertDialog(JFrame parent)
+	public PurchaseInsertDialog(JFrame parent)
 	{
-	    super(parent, "Insert Item", true);
+	    super(parent, "Insert Purchase", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -196,7 +195,7 @@ public class ItemController implements ActionListener, ExceptionListener
 	    // this panel will contain the text field labels and the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "Item Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Purchase Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 	 
 	    // add the text field labels and text fields to inputPane
@@ -206,131 +205,86 @@ public class ItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place upc label
-	    JLabel label = new JLabel("UPC: ", SwingConstants.RIGHT);
+	    // create and place customer id label
+	    JLabel label = new JLabel("Customer ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item UPC field
+	    // place customer id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
+	    gb.setConstraints(custID, c);
+	    inputPane.add(custID);
 	    
-	    // create and place item title label
-	    label = new JLabel("Title: ", SwingConstants.RIGHT);
+	    // create and place card number label
+	    label = new JLabel("Card number: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item title field
+	    // place card number field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(title, c);
-	    inputPane.add(title);
+	    gb.setConstraints(cardNumber, c);
+	    inputPane.add(cardNumber);
 
-	    // create and place item type label
-	    label = new JLabel("Type: ", SwingConstants.RIGHT);
+	    // create and place card expiry label
+	    label = new JLabel("Card expiry (MM/YY): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item type field
+	    // place card expiry field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(type, c);
-	    inputPane.add(type);
+	    gb.setConstraints(cardExpiry, c);
+	    inputPane.add(cardExpiry);
 
-	    // create and place item category label
-	    label = new JLabel("Category: ", SwingConstants.RIGHT);
+	    // create and place expected date label
+	    label = new JLabel("Expected date (dd-MM-yyyy): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item category field
+	    // place expected date field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(category, c);
-	    inputPane.add(category);
+	    gb.setConstraints(purExpected, c);
+	    inputPane.add(purExpected);
 
-	    // create and place item stock label
-	    label = new JLabel("Stock: ", SwingConstants.RIGHT);
+	    // create and place delivered date label
+	    label = new JLabel("Delivered date (dd-MM-yyyy): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item stock field
+	    // place delivered date field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(stock, c);
-	    inputPane.add(stock);
-
-	    // create and place item company label
-	    label = new JLabel("Company: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item stock field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(company, c);
-	    inputPane.add(company);
-	    
-	    // create and place item year label
-	    label = new JLabel("Year: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item year field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(year, c);
-	    inputPane.add(year);
-	    
-	    // create and place item sellPrice label
-	    label = new JLabel("Sell price: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item sellPrice field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(sellPrice, c);
-	    inputPane.add(sellPrice);
+	    gb.setConstraints(purDelivered, c);
+	    inputPane.add(purDelivered);
 	    
 	    // when the return key is pressed in the last field
 	    // of this form, the action performed by the ok button
 	    // is executed
-	    sellPrice.addActionListener(this);
-	    sellPrice.setActionCommand("OK");
+	    purDelivered.addActionListener(this);
+	    purDelivered.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();
@@ -369,7 +323,7 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in ItemInsertDialog
+	 * Event handler for the OK button in PurchaseInsertDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -394,8 +348,8 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in ItemInsertDialog and then
-	 * calls item.insertItem() if the fields are valid.
+	 * Validates the text fields in PurchaseInsertDialog and then
+	 * calls purchase.insertPurchase() if the fields are valid.
 	 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 	 * OPERATIONFAILED, VALIDATIONERROR.
 	 */ 
@@ -403,104 +357,91 @@ public class ItemController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-	    int upc;
-	    String tit;
-		String typ;
-		String cat;
-		int stk;
-		String comp;
-		int yr;
-		BigDecimal price;
+	    String cid;
+	    String cardno;
+	    Date expire;
+	    Date expected;
+	    Date delivered;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (custID.getText().trim().length() != 0)
 		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
-		    
-		    // check for duplicates
-		    if (item.findItem(upc))
-		    {
-			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("Item with UPC " + upc + " already exists!");
-			return OPERATIONFAILED; 
-		    }
+		    cid = custID.getText().trim();
 		} else {
 			return VALIDATIONERROR;
 		}
 
-		if (title.getText().trim().length() != 0)
+		if (cardNumber.getText().trim().length() == 16 && isNumeric(cardNumber.getText().trim()))
 		{
-		    tit = title.getText().trim();
+		    cardno = cardNumber.getText().trim();
 		}
 		else
 		{
-		    return VALIDATIONERROR; 
+		    cardno = null; 
 		}
 
-		if (type.getText().trim().length() != 0)
+		String stringDate = cardExpiry.getText().trim();
+		
+		if (stringDate.length() != 0)
 		{
-		    typ = type.getText().trim();
-		    if(!typ.equals("cd") && !typ.equals("dvd"))
-		    	return VALIDATIONERROR;
+			if(stringDate.length() != 5) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("MM/yy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			expire = new java.sql.Date(utilDate.getTime());
 		}
 		else
 		{
-		    return VALIDATIONERROR; 
+		    expire = null;
 		}
 
-		if (category.getText().trim().length() != 0)
+		stringDate = purExpected.getText().trim();
+		
+		if (stringDate.length() != 0)
 		{
-		    cat = category.getText().trim();
-		    boolean validCat = false;
-		    String[] categories = {"rock", "pop", "rap", "country", "classical", "new age" ,"instrumental"};
-		    for(String valid: categories) {
-		    	if(cat.equals(valid)) {
-		    		validCat = true;
-		    		break;
-		    	}
-		    }
-		    if(!validCat) return VALIDATIONERROR;
+			if(stringDate.length() != 10) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			expected = new java.sql.Date(utilDate.getTime());
 		}
 		else
 		{
-		    return VALIDATIONERROR;
+		    expected = null;
 		}
 		
-		if (stock.getText().trim().length() != 0 && isNumeric(stock.getText().trim()))
-		{
-		    stk = Integer.valueOf(stock.getText().trim()).intValue();
-		} else {
-			return VALIDATIONERROR;
-		}
+		stringDate = purDelivered.getText().trim();
 		
-		if (company.getText().trim().length() != 0)
+		if (stringDate.length() != 0)
 		{
-		    comp = company.getText().trim();
+			if(stringDate.length() != 10) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			delivered = new java.sql.Date(utilDate.getTime());
 		}
 		else
 		{
-		    comp = null; 
+		    delivered = null;
 		}
 		
-		if (year.getText().trim().length() == 4 && isNumeric(year.getText().trim()))
-		{
-		    yr = Integer.valueOf(stock.getText().trim()).intValue();
-		} else {
-			yr = -1;
-		}
+		mvb.updateStatusBar("Inserting purchase...");
 
-		if (sellPrice.getText().trim().length() != 0 && isPrice(sellPrice.getText().trim()))
-		{
-		    price = BigDecimal.valueOf(Double.valueOf(sellPrice.getText().trim()));
-		} else {
-			return VALIDATIONERROR;
-		}
-		
-		mvb.updateStatusBar("Inserting item...");
-
-		if (item.insertItem(upc, tit, typ, cat, stk, comp, yr, price))
+		if (purchase.insertPurchase(cid, cardno, expire, expected, delivered))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllItems();
+		    showAllPurchases();
 		    return OPERATIONSUCCESS; 
 		}
 		else
@@ -525,32 +466,27 @@ public class ItemController implements ActionListener, ExceptionListener
 		}
 		return true;
 	}
-	private boolean isPrice(String string) {
-		return string.matches("\\d{0,8}\\.\\d\\d");
-	}
     }
 
 
     /*
-     * This class creates a dialog box for updating a item.
+     * This class creates a dialog box for updating a purchase.
      */
-    class ItemUpdateDialog extends JDialog implements ActionListener
+    class PurchaseUpdateDialog extends JDialog implements ActionListener
     {
-    	private JTextField itemUPC = new JTextField(10);
-    	private JTextField title = new JTextField(60);
-    	private JTextField type = new JTextField(3);
-    	private JTextField category = new JTextField(60);
-    	private JTextField stock = new JTextField(10);
-    	private JTextField company = new JTextField(30);
-    	private JTextField year = new JTextField(4);
-    	private JTextField sellPrice = new JTextField(13);
+    	private JTextField recID = new JTextField(10);
+    	private JTextField custID = new JTextField(12);
+    	private JTextField cardNumber = new JTextField(16);
+    	private JTextField cardExpiry = new JTextField(5);
+    	private JTextField purExpected = new JTextField(10);
+    	private JTextField purDelivered = new JTextField(10);
 	
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public ItemUpdateDialog(JFrame parent)
+	public PurchaseUpdateDialog(JFrame parent)
 	{
-	    super(parent, "Update Item", true);
+	    super(parent, "Update Purchase", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -561,7 +497,7 @@ public class ItemController implements ActionListener, ExceptionListener
 	    // the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "Item Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Purchase Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 	 
 	    // add the text field labels and text fields to inputPane
@@ -571,131 +507,101 @@ public class ItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	 // create and place upc label
-	    JLabel label = new JLabel("UPC: ", SwingConstants.RIGHT);
+	 // create and place receipt id label
+	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item UPC field
+	    // place purchase receipt ID field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
+	    gb.setConstraints(recID, c);
+	    inputPane.add(recID);
 	    
-	    // create and place item title label
-	    label = new JLabel("New title: ", SwingConstants.RIGHT);
+	    // create and place customer id label
+	    label = new JLabel("Customer ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item password field
+	    // place customer id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(title, c);
-	    inputPane.add(title);
-
-	    // create and place item type label
-	    label = new JLabel("New type: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item type field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(type, c);
-	    inputPane.add(type);
-
-	    // create and place item category label
-	    label = new JLabel("New category: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item category field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(category, c);
-	    inputPane.add(category);
-
-	    // create and place item stock label
-	    label = new JLabel("New stock: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item stock field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(stock, c);
-	    inputPane.add(stock);
-
-	    // create and place item company label
-	    label = new JLabel("New company: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place item stock field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(company, c);
-	    inputPane.add(company);
+	    gb.setConstraints(custID, c);
+	    inputPane.add(custID);
 	    
-	    // create and place item year label
-	    label = new JLabel("New year: ", SwingConstants.RIGHT);
+	    // create and place card number label
+	    label = new JLabel("Card number: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item year field
+	    // place card number field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(year, c);
-	    inputPane.add(year);
-	    
-	    // create and place item sellPrice label
-	    label = new JLabel("New sell price: ", SwingConstants.RIGHT);
+	    gb.setConstraints(cardNumber, c);
+	    inputPane.add(cardNumber);
+
+	    // create and place card expiry label
+	    label = new JLabel("Card expiry (MM/YY): ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item sellPrice field
+	    // place card expiry field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(sellPrice, c);
-	    inputPane.add(sellPrice);
+	    gb.setConstraints(cardExpiry, c);
+	    inputPane.add(cardExpiry);
+
+	    // create and place expected date label
+	    label = new JLabel("Expected date (dd-MM-yyyy): ", SwingConstants.RIGHT);
+	    c.gridwidth = GridBagConstraints.RELATIVE;
+	    c.insets = new Insets(5, 0, 0, 5);
+	    c.anchor = GridBagConstraints.EAST;
+	    gb.setConstraints(label, c);
+	    inputPane.add(label);
+
+	    // place expected date field
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.insets = new Insets(5, 0, 0, 0);
+	    c.anchor = GridBagConstraints.WEST;
+	    gb.setConstraints(purExpected, c);
+	    inputPane.add(purExpected);
+
+	    // create and place delivered date label
+	    label = new JLabel("Delivered date (dd-MM-yyyy): ", SwingConstants.RIGHT);
+	    c.gridwidth = GridBagConstraints.RELATIVE;
+	    c.insets = new Insets(5, 0, 0, 5);
+	    c.anchor = GridBagConstraints.EAST;
+	    gb.setConstraints(label, c);
+	    inputPane.add(label);
+
+	    // place delivered date field
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.insets = new Insets(5, 0, 0, 0);
+	    c.anchor = GridBagConstraints.WEST;
+	    gb.setConstraints(purDelivered, c);
+	    inputPane.add(purDelivered);
 	    
 	    // when the return key is pressed in the last field
 	    // of this form, the action performed by the ok button
 	    // is executed
-	    sellPrice.addActionListener(this);
-	    sellPrice.setActionCommand("OK");
+	    purDelivered.addActionListener(this);
+	    purDelivered.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();
@@ -734,7 +640,7 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in ItemUpdateDialog
+	 * Event handler for the OK button in PurchaseUpdateDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -759,112 +665,115 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in ItemUpdateDialog and then
-	 * calls item.updateItem() if the fields are valid.
+	 * Validates the text fields in PurchaseUpdateDialog and then
+	 * calls purchase.updatePurchase() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateUpdate()
 	{
 		try
 	    {
-	    int upc;
-	    String tit;
-		String typ;
-		String cat;
-		int stk;
-		String comp;
-		int yr;
-		BigDecimal price;
+			int receiptID;
+			String cid;
+		    String cardno;
+		    Date expire;
+		    Date expected;
+		    Date delivered;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (recID.getText().trim().length() != 0 && isNumeric(recID.getText().trim()))
 		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
+		    receiptID = Integer.valueOf(recID.getText().trim()).intValue();
 		    
-		    // check if item exists
-		    if (!item.findItem(upc))
+		    // check if purchase exists
+		    if (!purchase.findPurchase(receiptID))
 		    {
 		    	Toolkit.getDefaultToolkit().beep();
-		    	mvb.updateStatusBar("Item with UPC " + upc + " does not exist!");
+		    	mvb.updateStatusBar("Purchase with ID " + receiptID + " does not exist!");
 		    	return OPERATIONFAILED; 
 		    }
 		} else {
 			return VALIDATIONERROR;
 		}
 
-		if (title.getText().trim().length() != 0)
+		if (custID.getText().trim().length() != 0)
 		{
-		    tit = title.getText().trim();
-		}
-		else
-		{
-		    return VALIDATIONERROR; 
-		}
-
-		if (type.getText().trim().length() != 0)
-		{
-		    typ = type.getText().trim();
-		    if(!typ.equals("cd") && !typ.equals("dvd"))
-		    	return VALIDATIONERROR;
-		}
-		else
-		{
-		    return VALIDATIONERROR; 
-		}
-
-		if (category.getText().trim().length() != 0)
-		{
-		    cat = category.getText().trim();
-		    boolean validCat = false;
-		    String[] categories = {"rock", "pop", "rap", "country", "classical", "new age" ,"instrumental"};
-		    for(String valid: categories) {
-		    	if(cat.equals(valid)) {
-		    		validCat = true;
-		    		break;
-		    	}
-		    }
-		    if(!validCat) return VALIDATIONERROR;
-		}
-		else
-		{
-		    return VALIDATIONERROR;
-		}
-		
-		if (stock.getText().trim().length() != 0 && isNumeric(stock.getText().trim()))
-		{
-		    stk = Integer.valueOf(stock.getText().trim()).intValue();
+		    cid = custID.getText().trim();
 		} else {
 			return VALIDATIONERROR;
 		}
-		
-		if (company.getText().trim().length() != 0)
+
+		if (cardNumber.getText().trim().length() == 16 && isNumeric(cardNumber.getText().trim()))
 		{
-		    comp = company.getText().trim();
+		    cardno = cardNumber.getText().trim();
 		}
 		else
 		{
-		    comp = null; 
-		}
-		
-		if (year.getText().trim().length() == 4 && isNumeric(year.getText().trim()))
-		{
-		    yr = Integer.valueOf(stock.getText().trim()).intValue();
-		} else {
-			yr = -1;
+		    cardno = null; 
 		}
 
-		if (sellPrice.getText().trim().length() != 0 && isPrice(sellPrice.getText().trim()))
+		String stringDate = cardExpiry.getText().trim();
+		
+		if (stringDate.length() != 0)
 		{
-		    price = BigDecimal.valueOf(Double.valueOf(sellPrice.getText().trim()));
-		} else {
-			return VALIDATIONERROR;
+			if(stringDate.length() != 5) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("MM/yy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			expire = new java.sql.Date(utilDate.getTime());
+		}
+		else
+		{
+		    expire = null;
+		}
+
+		stringDate = purExpected.getText().trim();
+		
+		if (stringDate.length() != 0)
+		{
+			if(stringDate.length() != 10) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			expected = new java.sql.Date(utilDate.getTime());
+		}
+		else
+		{
+		    expected = null;
 		}
 		
-		mvb.updateStatusBar("Updating item...");
+		stringDate = purDelivered.getText().trim();
+		
+		if (stringDate.length() != 0)
+		{
+			if(stringDate.length() != 10) return VALIDATIONERROR;
+			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
+			java.util.Date utilDate;
+			try {
+				utilDate = fm.parse(stringDate);
+			} catch (ParseException ex) {
+				return VALIDATIONERROR;
+			}
+			delivered = new java.sql.Date(utilDate.getTime());
+		}
+		else
+		{
+		    delivered = null;
+		}
+		
+		mvb.updateStatusBar("Updating purchase...");
 
-		if (item.updateItem(upc, tit, typ, cat, stk, comp, yr, price))
+		if (purchase.updatePurchase(receiptID, cid, cardno, expire, expected, delivered))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllItems();
+		    showAllPurchases();
 		    return OPERATIONSUCCESS; 
 		}
 		else
@@ -889,27 +798,23 @@ public class ItemController implements ActionListener, ExceptionListener
 		}
 		return true;
 	}
-	private boolean isPrice(String string) {
-		// match 0-8 decimals, then a period, and then two more decimals
-		return string.matches("\\d{0,8}\\.\\d\\d");
-	}
     }
 
 
     /*
-     * This class creates a dialog box for deleting a item.
+     * This class creates a dialog box for deleting a purchase.
      */
-    class ItemDeleteDialog extends JDialog implements ActionListener
+    class PurchaseDeleteDialog extends JDialog implements ActionListener
     {
-	private JTextField itemUPC = new JTextField(10);
+	private JTextField recID = new JTextField(10);
 	
 
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public ItemDeleteDialog(JFrame parent)
+	public PurchaseDeleteDialog(JFrame parent)
 	{
-	    super(parent, "Delete Item", true);
+	    super(parent, "Delete Purchase", true);
 	    setResizable(false);
 
 	    JPanel contentPane = new JPanel(new BorderLayout());
@@ -919,7 +824,7 @@ public class ItemController implements ActionListener, ExceptionListener
 	    // this panel contains the text field labels and the text fields.
 	    JPanel inputPane = new JPanel();
 	    inputPane.setBorder(BorderFactory.createCompoundBorder(
-			 new TitledBorder(new EtchedBorder(), "Item Fields"), 
+			 new TitledBorder(new EtchedBorder(), "Purchase Fields"), 
 			 new EmptyBorder(5, 5, 5, 5)));
 
 	    // add the text field labels and text fields to inputPane
@@ -929,7 +834,7 @@ public class ItemController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place item id label
+	    // create and place receipt id label
 	    JLabel label= new JLabel("UPC: ", SwingConstants.RIGHT);	    
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(0, 0, 0, 5);
@@ -937,18 +842,18 @@ public class ItemController implements ActionListener, ExceptionListener
 	    gb.setConstraints(label, c);
 	    inputPane.add(label);
 
-	    // place item id field
+	    // place receipt id field
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(0, 0, 0, 0);
 	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
+	    gb.setConstraints(recID, c);
+	    inputPane.add(recID);
 
 	    // when the return key is pressed while in the
-	    // itemID field, the action performed by the ok button
+	    // purchaseID field, the action performed by the ok button
 	    // is executed
-	    itemUPC.addActionListener(this);
-	    itemUPC.setActionCommand("OK");
+	    recID.addActionListener(this);
+	    recID.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();
@@ -987,7 +892,7 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Event handler for the OK button in ItemDeleteDialog
+	 * Event handler for the OK button in PurchaseDeleteDialog
 	 */ 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -1012,25 +917,25 @@ public class ItemController implements ActionListener, ExceptionListener
 
 
 	/*
-	 * Validates the text fields in ItemDeleteDialog and then
-	 * calls item.deleteItem() if the fields are valid.
+	 * Validates the text fields in PurchaseDeleteDialog and then
+	 * calls purchase.deletePurchase() if the fields are valid.
 	 * Returns the operation status.
 	 */ 
 	private int validateDelete()
 	{
 	    try
 	    {
-		int upc;
+		int receiptID;
 
-		if (itemUPC.getText().trim().length() != 0)
+		if (recID.getText().trim().length() != 0)
 		{
-		    upc = Integer.valueOf(itemUPC.getText().trim()).intValue();
+		    receiptID = Integer.valueOf(recID.getText().trim()).intValue();
 
-		    // check if item exists
-		    if (!item.findItem(upc))
+		    // check if purchase exists
+		    if (!purchase.findPurchase(receiptID))
 		    {
 			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("Item with UPC " + upc + " does not exist!");
+			mvb.updateStatusBar("Purchase with ID " + receiptID + " does not exist!");
 			return OPERATIONFAILED; 
 		    }
 		}
@@ -1039,12 +944,12 @@ public class ItemController implements ActionListener, ExceptionListener
 		    return VALIDATIONERROR; 
 		}
 	       
-		mvb.updateStatusBar("Deleting item...");
+		mvb.updateStatusBar("Deleting purchase...");
 
-		if (item.deleteItem(upc))
+		if (purchase.deletePurchase(receiptID))
 		{
 		    mvb.updateStatusBar("Operation successful.");
-		    showAllItems();
+		    showAllPurchases();
 		    return OPERATIONSUCCESS;
 		}
 		else

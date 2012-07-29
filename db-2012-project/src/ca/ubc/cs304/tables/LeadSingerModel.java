@@ -146,7 +146,7 @@ public class LeadSingerModel {
     }
     
     /*
-     * Returns true if the findLeadSinger tuple exists; false
+     * Returns true if the LeadSinger tuple exists; false
      * otherwise.
      */ 
     public boolean findLeadSinger(int upc, String name)
