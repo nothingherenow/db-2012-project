@@ -11,6 +11,7 @@ import javax.swing.border.*;
 import ca.ubc.cs304.tables.BranchController;
 import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
+import ca.ubc.cs304.tables.ItemController;
 import ca.ubc.cs304.tables.ShipmentController;
 
 /*
@@ -524,15 +525,16 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(hsc);
 		}
 		
-		// Uncomment as controllers are implemented
-		/*ItemController ic = new ItemController(this);
+		
+		ItemController ic = new ItemController(this);
 		
 		for (int i = 0; i < itemAdmin.getItemCount(); i++) {
 			menuItem = itemAdmin.getItem(i);
 			menuItem.addActionListener(ic);
 		}
 		
-		LeadSingerController lsc = new LeadSingerController(this);
+		// Uncomment as controllers are implemented
+		/*LeadSingerController lsc = new LeadSingerController(this);
 		
 		for (int i = 0; i < leadSingerAdmin.getItemCount(); i++) {
 			menuItem = leadSingerAdmin.getItem(i);

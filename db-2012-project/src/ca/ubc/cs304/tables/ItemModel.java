@@ -27,36 +27,34 @@ public class ItemModel {
 	 * Insert a Item Returns true if the insert is successful; false otherwise.
 	 * year,company, and quantity can be null
 	 */
-	public boolean insertItem(Integer upc, String ititle, String icat,
-			String icomp, Integer iyear, Integer iquantity, BigDecimal isellp) {
+	public boolean insertItem(int upc, String ititle, String itype, String icat,
+			int istock, String icomp, int iyear, BigDecimal isellp) {
 		try {
-			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?,?)");
 
-			ps.setInt(1, upc.intValue());
+			ps.setInt(1, upc);
 
 			ps.setString(2, ititle);
+			
+			ps.setString(3, itype);
 
-			ps.setString(3, icat);
+			ps.setString(4, icat);
+			
+			ps.setInt(5, istock);
 
 			if (icomp != null) {
-				ps.setString(4, icomp);
+				ps.setString(6, icomp);
 			} else {
-				ps.setString(4, null);
+				ps.setString(6, null);
 			}
 
-			if (iyear != null) {
-				ps.setInt(5, iyear.intValue());
+			if (iyear != -1) {
+				ps.setInt(7, iyear);
 			} else {
-				ps.setNull(5, Types.INTEGER);
+				ps.setNull(7, Types.INTEGER);
 			}
 
-			if (iquantity != null) {
-				ps.setInt(6, iquantity.intValue());
-			} else {
-				ps.setNull(6, Types.INTEGER);
-			}
-
-			ps.setBigDecimal(7, isellp);
+			ps.setBigDecimal(8, isellp);
 
 			ps.executeUpdate();
 			con.commit();
@@ -77,6 +75,69 @@ public class ItemModel {
 		}
 	}
 
+	/*
+     * Updates an item.
+     * Returns true if the update is successful; false otherwise.
+     *
+     * ititle, itype, icat and isellp cannot be null.
+     */
+    public boolean updateItem(int upc, String ititle, String itype, String icat,
+			int istock, String icomp, int iyear, BigDecimal isellp)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("UPDATE item SET title = ?, type = ?, category = ?," +
+	    		"stock = ?, company = ?, year = ?, sellPrice = ? WHERE upc = ?");
+
+	    ps.setString(1, ititle);
+
+	    ps.setString(2, itype);
+
+	    ps.setString(3, icat);
+	    
+	    ps.setInt(4, istock);
+	    
+	    if(icomp != null) {
+	    	ps.setString(5, icomp);
+	    } else {
+	    	ps.setString(5, null);
+	    }
+	    
+	    if(iyear != -1) {
+	    	ps.setInt(6, iyear);
+	    } else {
+	    	ps.setNull(6, java.sql.Types.NULL);
+	    }
+	    
+	    ps.setBigDecimal(7,isellp);
+	    
+	    ps.setInt(8, upc);
+	    
+	    ps.executeUpdate();
+	    
+	    con.commit();
+
+	    return true; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    
+	    try
+	    {
+		con.rollback();
+		return false; 
+	    }
+	    catch (SQLException ex2)
+	    {
+		 event = new ExceptionEvent(this, ex2.getMessage());
+		 fireExceptionGenerated(event);
+		 return false; 
+	    }
+	}
+    }
+	
 	/*
 	 * Deletes an item. Returns true if the delete is successful; false
 	 * otherwise.
@@ -106,6 +167,33 @@ public class ItemModel {
 			}
 		}
 	}
+	
+	/*
+     * Returns a ResultSet containing all items. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null
+     * is returned.
+     */ 
+    public ResultSet showItem()
+    {
+	try
+	{	 
+	    ps = con.prepareStatement("SELECT i.* FROM item i", 
+				      ResultSet.TYPE_SCROLL_INSENSITIVE,
+				      ResultSet.CONCUR_READ_ONLY);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    return rs; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    // no need to commit or rollback since it is only a query
+
+	    return null; 
+	}
+    }
 
 	/*
 	 * Returns an updatable result set for Item
@@ -127,6 +215,80 @@ public class ItemModel {
 			return null;
 		}
 	}
+	
+	/*
+     * Returns true if the item exists; false
+     * otherwise.
+     */ 
+    public boolean findItem(int upc)
+    {
+	try
+	{	
+	    ps = con.prepareStatement("SELECT upc FROM item where upc = ?");
+
+	    ps.setInt(1, upc);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		return true; 
+	    }
+	    else
+	    {
+		return false; 
+	    }
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+
+	    return false; 
+	}
+    }
+	
+	/*
+     * Returns the database connection used by this customer model
+     */
+    public Connection getConnection()
+    {
+	return con; 
+    }
+
+    /*
+     * This method allows members of this class to clean up after itself 
+     * before it is garbage collected. It is called by the garbage collector.
+     */ 
+    protected void finalize() throws Throwable
+    {
+	if (ps != null)
+	{
+	    ps.close();
+	}
+
+	// finalize() must call super.finalize() as the last thing it does
+	super.finalize();	
+    }
+
+
+    /******************************************************************************
+     * Below are the methods to add and remove ExceptionListeners.
+     * 
+     * Whenever an exception occurs in BranchModel, an exception event
+     * is sent to all registered ExceptionListeners.
+     ******************************************************************************/ 
+    
+    public void addExceptionListener(ExceptionListener l) 
+    {
+	listenerList.add(ExceptionListener.class, l);
+    }
+
+
+    public void removeExceptionListener(ExceptionListener l) 
+    {
+	listenerList.remove(ExceptionListener.class, l);
+    }
 
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
