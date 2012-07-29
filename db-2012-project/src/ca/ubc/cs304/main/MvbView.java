@@ -17,6 +17,7 @@ import ca.ubc.cs304.tables.PurchaseController;
 import ca.ubc.cs304.tables.PurchaseItemController;
 import ca.ubc.cs304.tables.ReturnController;
 import ca.ubc.cs304.tables.ReturnItemController;
+import ca.ubc.cs304.tables.ShipItemController;
 import ca.ubc.cs304.tables.ShipmentController;
 
 /*
@@ -572,14 +573,12 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(rc);
 		}
 		
-		// Uncomment as controllers are implemented
-		/*ShipItemController sic = new ShipItemController(this);
+		ShipItemController sic = new ShipItemController(this);
 		
 		for (int i = 0; i < shipItemAdmin.getItemCount(); i++) {
 			menuItem = shipItemAdmin.getItem(i);
 			menuItem.addActionListener(sic);
 		}
-		*/
 	}
 
 	public static void main(String[] args) {
