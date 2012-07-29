@@ -104,7 +104,7 @@ public class PurchaseItemModel {
 	 */
 	public boolean deletePurchaseItem(Integer rid, Integer upc) {
 		try {
-			ps = con.prepareStatement("DELETE FROM purchaseitem WHERE receipt_id = ? AND upc = ?");
+			ps = con.prepareStatement("DELETE FROM purchaseitem WHERE receiptid = ? AND upc = ?");
 
 			ps.setInt(1, rid.intValue());
 

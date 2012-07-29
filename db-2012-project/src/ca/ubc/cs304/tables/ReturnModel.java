@@ -24,13 +24,12 @@ public class ReturnModel {
 	 * Insert a Return. Returns true if the insert is successful; false
 	 * otherwise.
 	 */
-	public boolean insertReturn(Integer retid, Integer rid) {
+	public boolean insertReturn(Integer rid) {
 		try {
-			ps = con.prepareStatement("INSERT INTO return VALUES (?,sysdate,?)");
+			ps = con.prepareStatement("INSERT INTO return VALUES (return_counter.nextval,sysdate,?)");
 
-			ps.setInt(1, retid.intValue());
 
-			ps.setInt(2, rid.intValue());
+			ps.setInt(1, rid.intValue());
 			
 			ps.executeUpdate();
 			con.commit();
@@ -178,7 +177,7 @@ public class ReturnModel {
     {
 	try
 	{	
-	    ps = con.prepareStatement("SELECT * FROM purchaseitem WHERE retID = ?");
+	    ps = con.prepareStatement("SELECT * FROM return WHERE retID = ?");
 
 	    ps.setInt(1, retID);
 

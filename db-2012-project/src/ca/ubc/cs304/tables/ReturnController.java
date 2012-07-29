@@ -172,7 +172,6 @@ public class ReturnController implements ActionListener, ExceptionListener
      */
     class ReturnInsertDialog extends JDialog implements ActionListener
     {
-    private JTextField returnID = new JTextField(10);
 	private JTextField receiptID = new JTextField(10);
 	
 	/*
@@ -199,24 +198,9 @@ public class ReturnController implements ActionListener, ExceptionListener
 	    GridBagLayout gb = new GridBagLayout();
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
-
-	    // create and place return id label
-	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(5, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place return id field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(5, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(returnID, c);
-	    inputPane.add(returnID);
 	    
 	    // create and place receipt id label
-	    label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
+	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -307,23 +291,7 @@ public class ReturnController implements ActionListener, ExceptionListener
 	{
 	    try
 	    {
-	    int retID;
 	    int recID;
-
-		if (returnID.getText().trim().length() != 0 && isNumeric(returnID.getText().trim()))
-		{
-		    retID = Integer.valueOf(returnID.getText().trim()).intValue();
-		    
-		    // check for duplicates
-		    if (ret.findReturn(retID))
-		    {
-			Toolkit.getDefaultToolkit().beep();
-			mvb.updateStatusBar("Return with ID " + retID + " already exists!");
-			return OPERATIONFAILED; 
-		    }
-		} else {
-			return VALIDATIONERROR;
-		}
 
 		if (receiptID.getText().trim().length() != 0 && isNumeric(receiptID.getText().trim()))
 		{
@@ -336,7 +304,7 @@ public class ReturnController implements ActionListener, ExceptionListener
 
 		mvb.updateStatusBar("Inserting return...");
 
-		if (ret.insertReturn(retID, recID))
+		if (ret.insertReturn(recID))
 		{
 		    mvb.updateStatusBar("Operation successful.");
 		    showAllReturns();
@@ -417,7 +385,7 @@ public class ReturnController implements ActionListener, ExceptionListener
 	    inputPane.add(returnID);
 	    
 	    // create and place receipt ID label
-	    label = new JLabel("Item UPC: ", SwingConstants.RIGHT);
+	    label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(5, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
@@ -573,8 +541,6 @@ public class ReturnController implements ActionListener, ExceptionListener
     class ReturnDeleteDialog extends JDialog implements ActionListener
     {
 	private JTextField returnID = new JTextField(10);
-	private JTextField itemUPC = new JTextField(10);
-	
 
 	/*
 	 * Constructor. Creates the dialog's GUI.
@@ -615,27 +581,12 @@ public class ReturnController implements ActionListener, ExceptionListener
 	    c.anchor = GridBagConstraints.WEST;
 	    gb.setConstraints(returnID, c);
 	    inputPane.add(returnID);
-	    
-	    // create and place upc label
-	    label = new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
-	    c.gridwidth = GridBagConstraints.RELATIVE;
-	    c.insets = new Insets(0, 0, 0, 5);
-	    c.anchor = GridBagConstraints.EAST;
-	    gb.setConstraints(label, c);
-	    inputPane.add(label);
-
-	    // place upc field
-	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    c.insets = new Insets(0, 0, 0, 0);
-	    c.anchor = GridBagConstraints.WEST;
-	    gb.setConstraints(itemUPC, c);
-	    inputPane.add(itemUPC);
 
 	    // when the return key is pressed while in the
 	    // retID field, the action performed by the ok button
 	    // is executed
-	    itemUPC.addActionListener(this);
-	    itemUPC.setActionCommand("OK");
+	    returnID.addActionListener(this);
+	    returnID.setActionCommand("OK");
 
 	    // panel for the OK and cancel buttons
 	    JPanel buttonPane = new JPanel();

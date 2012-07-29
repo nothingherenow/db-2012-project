@@ -68,7 +68,7 @@ public class ReturnItemModel {
 	    
 	    ps.setInt(2, retID);
 	    
-	    ps.setInt(1, upc);
+	    ps.setInt(3, upc);
 	    
 	    ps.executeUpdate();
 	    

@@ -325,7 +325,7 @@ public class ShipmentController implements ActionListener, ExceptionListener
 
 		String stringDate = shipDate.getText().trim();
 		
-		if (stringDate.length() == 8)
+		if (stringDate.length() == 10)
 		{
 			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
 			java.util.Date utilDate;
@@ -542,24 +542,27 @@ public class ShipmentController implements ActionListener, ExceptionListener
 		}
 		else
 		{
+			System.err.println("A");
 		    return VALIDATIONERROR;
 		}
 		
 		String stringDate = shipDate.getText().trim();
 		
-		if (stringDate.length() == 8)
+		if (stringDate.length() == 10)
 		{
 			SimpleDateFormat fm = new SimpleDateFormat("dd-MM-yyyy");
 			java.util.Date utilDate;
 			try {
 				utilDate = fm.parse(stringDate);
 			} catch (ParseException ex) {
+				System.err.println("B");
 				return VALIDATIONERROR;
 			}
 			sdate = new java.sql.Date(utilDate.getTime());
 		}
 		else
 		{
+			System.err.println("C");
 		    return VALIDATIONERROR; 
 		}
 		
