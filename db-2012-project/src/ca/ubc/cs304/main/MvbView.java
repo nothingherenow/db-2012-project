@@ -12,6 +12,7 @@ import ca.ubc.cs304.tables.BranchController;
 import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ItemController;
+import ca.ubc.cs304.tables.LeadSingerController;
 import ca.ubc.cs304.tables.ShipmentController;
 
 /*
@@ -525,7 +526,6 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(hsc);
 		}
 		
-		
 		ItemController ic = new ItemController(this);
 		
 		for (int i = 0; i < itemAdmin.getItemCount(); i++) {
@@ -533,15 +533,15 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(ic);
 		}
 		
-		// Uncomment as controllers are implemented
-		/*LeadSingerController lsc = new LeadSingerController(this);
+		LeadSingerController lsc = new LeadSingerController(this);
 		
 		for (int i = 0; i < leadSingerAdmin.getItemCount(); i++) {
 			menuItem = leadSingerAdmin.getItem(i);
 			menuItem.addActionListener(lsc);
 		}
 		
-		PurchaseItemController pic = new PurchaseItemController(this);
+		// Uncomment as controllers are implemented
+		/*PurchaseItemController pic = new PurchaseItemController(this);
 		
 		for (int i = 0; i < purchaseItemAdmin.getItemCount(); i++) {
 			menuItem = purchaseItemAdmin.getItem(i);
