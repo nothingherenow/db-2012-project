@@ -60,6 +60,9 @@ public class CustomTableModel extends AbstractTableModel
 
     // whether or not the result set is updatable
     boolean           isUpdatable; 
+    
+    // whether or not the result set is sortable
+    boolean			  isSortable;
 
     // a vector of rows; each row is a vector of columns
     Vector                   rows = new Vector();
@@ -94,10 +97,12 @@ public class CustomTableModel extends AbstractTableModel
 	    if (rs.getConcurrency() == ResultSet.CONCUR_UPDATABLE)
 	    {
 		isUpdatable = true;
+		isSortable = false;
 	    }
 	    else
 	    {
-		isUpdatable = false; 
+		isUpdatable = false;
+		isSortable = true;
 	    }
 
 	    for (int i = 0; i < numColumns; i++)
@@ -633,7 +638,7 @@ public class CustomTableModel extends AbstractTableModel
 	 */ 
 	public void mouseClicked(MouseEvent e)
 	{
-	    if (isUpdatable)
+	    if (!isSortable)
 	    {
 		return; 
 	    }

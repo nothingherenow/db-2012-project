@@ -47,6 +47,7 @@ public class MvbView extends JFrame {
 	
 	// the top level customer menu
 	private JMenu cust;
+	private JMenuItem custAddItem;
 	
 	// the admin menus
 	private JMenu custAdmin;
@@ -140,6 +141,9 @@ public class MvbView extends JFrame {
 		cust.setMnemonic(KeyEvent.VK_C);
 		createMenuItem(cust, "Search for item...", KeyEvent.VK_S,
 				"Item Search");
+		custAddItem = createMenuItem(cust, "Add selected item to shopping cart...", KeyEvent.VK_A,
+				"Item Add");
+		custAddItem.setEnabled(false);
 		createMenuItem(cust, "Show shopping cart...", KeyEvent.VK_C,
 				"Show Cart");
 		
@@ -502,8 +506,17 @@ public class MvbView extends JFrame {
 	 */
 	public void addTable(JTable data) {
 		tableScrPane.setViewportView(data);
+		custAddItem.setEnabled(false);
 	}
 
+	/*
+	 * This method adds the given JTable into tableScrPane, also allowing customer to checkout items
+	 */
+	public void addShoppingTable(JTable data) {
+		tableScrPane.setViewportView(data);
+		custAddItem.setEnabled(true);
+	}
+	
 	/*
 	 * This method registers the controllers for all items in each menu. This
 	 * method should only be executed once.

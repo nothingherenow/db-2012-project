@@ -7,6 +7,7 @@ import javax.swing.event.EventListenerList;
 
 import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
+import ca.ubc.cs304.main.LoginWindow;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
 public class ShopTransactions {
@@ -25,284 +26,135 @@ public class ShopTransactions {
 	}
 
 	/*
-	 * Insert a Item returns true if the insert is successful; false otherwise.
-	 * year,company, and quantity can be null
-	 */
-	public boolean insertItem(int upc, String ititle, String itype, String icat,
-			int istock, String icomp, int iyear, BigDecimal isellp) {
-		try {
-			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?,?)");
-
-			ps.setInt(1, upc);
-
-			ps.setString(2, ititle);
-			
-			ps.setString(3, itype);
-
-			ps.setString(4, icat);
-			
-			ps.setInt(5, istock);
-
-			if (icomp != null) {
-				ps.setString(6, icomp);
-			} else {
-				ps.setString(6, null);
-			}
-
-			if (iyear != -1) {
-				ps.setInt(7, iyear);
-			} else {
-				ps.setNull(7, Types.INTEGER);
-			}
-
-			ps.setBigDecimal(8, isellp);
-
-			ps.executeUpdate();
-			
-			if(commit)
-			con.commit();
-			return true;
-
-		} catch (SQLException ex) {
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try {
-				con.rollback();
-				return false;
-			} catch (SQLException ex2) {
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false;
-			}
-		}
-	}
-
-	/*
-     * Updates an item.
-     * Returns true if the update is successful; false otherwise.
-     *
-     * ititle, itype, icat and isellp cannot be null.
-     */
-    public boolean updateItem(int upc, String ititle, String itype, String icat,
-			int istock, String icomp, int iyear, BigDecimal isellp)
-    {
-	try
-	{	
-	    ps = con.prepareStatement("UPDATE item SET title = ?, type = ?, category = ?," +
-	    		"stock = ?, company = ?, year = ?, sellPrice = ? WHERE upc = ?");
-
-	    ps.setString(1, ititle);
-
-	    ps.setString(2, itype);
-
-	    ps.setString(3, icat);
-	    
-	    ps.setInt(4, istock);
-	    
-	    if(icomp != null) {
-	    	ps.setString(5, icomp);
-	    } else {
-	    	ps.setString(5, null);
-	    }
-	    
-	    if(iyear != -1) {
-	    	ps.setInt(6, iyear);
-	    } else {
-	    	ps.setNull(6, java.sql.Types.NULL);
-	    }
-	    
-	    ps.setBigDecimal(7,isellp);
-	    
-	    ps.setInt(8, upc);
-	    
-	    ps.executeUpdate();
-	    
-	    if(commit)
-	    con.commit();
-
-	    return true; 
-	}
-	catch (SQLException ex)
+	 * Returns a ResultSet containing items matching input parameters. The ResultSet is
+	 * scroll insensitive and read only. If there is an error, null is returned.
+	 */ 
+	public ResultSet searchItems(String title, String category, String lead)
 	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-	    
-	    try
-	    {
-		con.rollback();
-		return false; 
-	    }
-	    catch (SQLException ex2)
-	    {
-		 event = new ExceptionEvent(this, ex2.getMessage());
-		 fireExceptionGenerated(event);
-		 return false; 
-	    }
-	}
-    }
-	
-	/*
-	 * Deletes an item. Returns true if the delete is successful; false
-	 * otherwise.
-	 */
-	public boolean deleteItem(Integer upc) {
-		try {
-			ps = con.prepareStatement("DELETE FROM item WHERE upc = ?");
+		try
+		{	 
+			// count non-null args
+			int argCount = 0;
+			int currentArg = 1;
 
-			ps.setInt(1, upc.intValue());
+			if(title != null) argCount++;
+			if(category != null) argCount++;
+			if(lead != null) argCount++;
 
-			ps.executeUpdate();
-
-			if(commit)
-			con.commit();
-
-			return true;
-		} catch (SQLException ex) {
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try {
-				con.rollback();
-				return false;
-			} catch (SQLException ex2) {
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false;
+			int argsLeft = argCount;
+			// Customize query depending on given parameters
+			StringBuffer statement = new StringBuffer("SELECT item.upc, title, category, " +
+					"name AS leadingsinger, stock FROM item, leadsinger WHERE item.upc = leadsinger.upc AND ");
+			if(title != null) {
+				statement.append("title = ?");
+				argsLeft--;
+				if(argsLeft > 0) statement.append(" AND ");
 			}
-		}
-	}
-	
-	/*
-     * Returns a ResultSet containing all items. The ResultSet is
-     * scroll insensitive and read only. If there is an error, null
-     * is returned.
-     */ 
-    public ResultSet showItem()
-    {
-	try
-	{	 
-	    ps = con.prepareStatement("SELECT i.* FROM item i", 
-				      ResultSet.TYPE_SCROLL_INSENSITIVE,
-				      ResultSet.CONCUR_READ_ONLY);
+			if(category != null) {
+				statement.append("category = ?");
+				argsLeft--;
+				if(argsLeft > 0) statement.append(" AND ");
+			}
+			if(lead != null) {
+				statement.append("name = ?");
+			}
 
-	    ResultSet rs = ps.executeQuery();
-
-	    return rs; 
-	}
-	catch (SQLException ex)
-	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-	    // no need to commit or rollback since it is only a query
-
-	    return null; 
-	}
-    }
-
-	/*
-	 * Returns an updatable result set for Item
-	 */
-	public ResultSet editItem() {
-		try {
-			ps = con.prepareStatement("SELECT i.* FROM item i",
+			ps = con.prepareStatement(statement.toString(), 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
+					ResultSet.CONCUR_READ_ONLY);
+
+			if(title != null) {
+				ps.setString(1, title);
+				currentArg++;
+			}
+			if(category != null) {
+				ps.setString(currentArg, category);
+				currentArg++;
+			}
+			if(lead != null) {
+				ps.setString(currentArg, lead);
+			}
 
 			ResultSet rs = ps.executeQuery();
 
-			return rs;
-		} catch (SQLException ex) {
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
 			// no need to commit or rollback since it is only a query
 
-			return null;
+			return null; 
+		}
+	}
+
+	public boolean claimItems(int upc, int quantity) {
+		String login = LoginWindow.getLogin();
+		
+		try
+		{
+			ps = con.prepareStatement("INSERT INTO shoppingcart " +
+					"VALUES(?,?,?)");
+			
+			ps.setString(1, login);
+			
+			ps.setInt(2, upc);
+			
+			ps.setInt(3, quantity);
+			
+			ps.executeUpdate();
+			
+			ps = con.prepareStatement("UPDATE Item SET stock = (stock - ?) WHERE upc = ?");
+
+			ps.setInt(1, quantity);
+
+			ps.setInt(2, upc);
+
+			ps.executeUpdate();
+			
+			con.commit();
+
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
 		}
 	}
 	
 	/*
-     * Returns true if the item exists; false
-     * otherwise.
+     * Returns a ResultSet containing customer's shopping cart. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null
+     * is returned.
      */ 
-    public boolean findItem(int upc)
+    public ResultSet showShoppingCart()
     {
-	try
-	{	
-	    ps = con.prepareStatement("SELECT upc FROM item where upc = ?");
-
-	    ps.setInt(1, upc);
-
-	    ResultSet rs = ps.executeQuery();
-
-	    if (rs.next())
-	    {
-		return true; 
-	    }
-	    else
-	    {
-		return false; 
-	    }
-	}
-	catch (SQLException ex)
-	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-
-	    return false; 
-	}
-    }
-	
-    /*
-     * Returns a ResultSet containing items matching input parameters. The ResultSet is
-     * scroll insensitive and read only. If there is an error, null is returned.
-     */ 
-    public ResultSet searchItems(String title, String category, String lead)
-    {
+    	String login = LoginWindow.getLogin();
+    	
 	try
 	{	 
-		// count non-null args
-		int argCount = 0;
-		int currentArg = 1;
-		
-		if(title != null) argCount++;
-		if(category != null) argCount++;
-		if(lead != null) argCount++;
-		
-		int argsLeft = argCount;
-		// Customize query depending on given parameters
-		StringBuffer statement = new StringBuffer("SELECT i.upc, i.title, i.category, l.name AS leadingsinger" +
-	    		", i.stock FROM item i , leadsinger l WHERE ");
-		if(title != null) {
-			statement.append("i.title = ?");
-			argsLeft--;
-			if(argsLeft > 0) statement.append(" AND ");
-		}
-		if(category != null) {
-			statement.append("i.category = ?");
-			argsLeft--;
-			if(argsLeft > 0) statement.append(" AND ");
-		}
-		if(lead != null) {
-			statement.append("l.name = ?");
-		}
-		
-	    ps = con.prepareStatement(statement.toString(), 
+	    ps = con.prepareStatement("SELECT s.upc, i.title, s.quantity " +
+	    		"FROM shoppingcart s, item i " +
+	    		"WHERE s.upc = i.upc AND s.cid = ?", 
 				      ResultSet.TYPE_SCROLL_INSENSITIVE,
 				      ResultSet.CONCUR_READ_ONLY);
-
-	    if(title != null) {
-	    	ps.setString(1, title);
-	    	currentArg++;
-	    }
-	    if(category != null) {
-	    	ps.setString(currentArg, category);
-	    	currentArg++;
-	    }
-	    if(lead != null) {
-	    	ps.setString(currentArg, lead);
-	    }
 	    
+	    ps.setString(1, login);
+
 	    ResultSet rs = ps.executeQuery();
 
 	    return rs; 
@@ -316,48 +168,48 @@ public class ShopTransactions {
 	    return null; 
 	}
     }
-    
+	
 	/*
-     * Returns the database connection used by this customer model
-     */
-    public Connection getConnection()
-    {
-	return con; 
-    }
-
-    /*
-     * This method allows members of this class to clean up after itself 
-     * before it is garbage collected. It is called by the garbage collector.
-     */ 
-    protected void finalize() throws Throwable
-    {
-	if (ps != null)
+	 * Returns the database connection used by this customer model
+	 */
+	public Connection getConnection()
 	{
-	    ps.close();
+		return con; 
 	}
 
-	// finalize() must call super.finalize() as the last thing it does
-	super.finalize();	
-    }
+	/*
+	 * This method allows members of this class to clean up after itself 
+	 * before it is garbage collected. It is called by the garbage collector.
+	 */ 
+	protected void finalize() throws Throwable
+	{
+		if (ps != null)
+		{
+			ps.close();
+		}
+
+		// finalize() must call super.finalize() as the last thing it does
+		super.finalize();	
+	}
 
 
-    /******************************************************************************
-     * Below are the methods to add and remove ExceptionListeners.
-     * 
-     * Whenever an exception occurs in BranchModel, an exception event
-     * is sent to all registered ExceptionListeners.
-     ******************************************************************************/ 
-    
-    public void addExceptionListener(ExceptionListener l) 
-    {
-	listenerList.add(ExceptionListener.class, l);
-    }
+	/******************************************************************************
+	 * Below are the methods to add and remove ExceptionListeners.
+	 * 
+	 * Whenever an exception occurs in BranchModel, an exception event
+	 * is sent to all registered ExceptionListeners.
+	 ******************************************************************************/ 
+
+	public void addExceptionListener(ExceptionListener l) 
+	{
+		listenerList.add(ExceptionListener.class, l);
+	}
 
 
-    public void removeExceptionListener(ExceptionListener l) 
-    {
-	listenerList.remove(ExceptionListener.class, l);
-    }
+	public void removeExceptionListener(ExceptionListener l) 
+	{
+		listenerList.remove(ExceptionListener.class, l);
+	}
 
 	/*
 	 * This method notifies all registered ExceptionListeners. The code below is
@@ -378,7 +230,7 @@ public class ShopTransactions {
 			}
 		}
 	}
-	
+
 	public void setCommit(boolean commit) {
 		this.commit = commit;
 	}

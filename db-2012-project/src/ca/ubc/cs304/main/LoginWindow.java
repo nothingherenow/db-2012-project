@@ -27,6 +27,9 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
     // user is allowed 3 login attempts
     private int loginAttempts = 0;
     
+    // get the login name the user used
+    private static String loginName;
+    
     // components of the login window
     private JTextField usernameField = new JTextField(10);
     private JPasswordField passwordField = new JPasswordField(10);	   
@@ -142,7 +145,10 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
 	// initially, place the cursor in the username text field
 	usernameField.requestFocus();	  
 	}
-
+    
+    public static String getLogin() {
+    	return loginName;
+    }
        
     /*
      * event handler for password field and OK button
@@ -189,9 +195,15 @@ public class LoginWindow extends JDialog implements ActionListener, ExceptionLis
     	
     	public boolean verifyLogin(String user, String password) {
     		for(String login: loginNames) {
-    			if(user.equals(login) && password.equals(login)) return true;
+    			if(user.equals(login) && password.equals(login)) {
+    				loginName = user;
+    				return true;
+    			}
     		}
-    		if(customer.validateCustomer(user, password)) return true;
+    		if(customer.validateCustomer(user, password)) {
+    			loginName = user;
+    			return true;
+    		}
     		return false;
     	}
     }
