@@ -8,7 +8,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import ca.ubc.cs304.tables.BranchController;
 import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ItemController;
@@ -81,7 +80,6 @@ public class MvbView extends JFrame {
 		menuBar.add(Box.createRigidArea(new Dimension(10, 0)));
 
 		// sets up the administration menus and adds them to the menu bar
-		setupBranchAdminMenu(menuBar);
 		setupAdmins(menuBar);
 
 		// the scrollpane for the status text field
@@ -129,37 +127,6 @@ public class MvbView extends JFrame {
 		setupReturnAdminMenu(admin);
 		setupShipItemAdminMenu(admin);
 		setupShipmentAdminMenu(admin);
-	}
-	
-	/*
-	 * Adds menu items to the Branch Admin menu and then adds the menu to the
-	 * menubar
-	 */
-	private void setupBranchAdminMenu(JMenuBar mb) {
-		branchAdmin = new JMenu("Branch Admin");
-
-		// when alt-b is pressed on the keyboard, the menu will appear
-		branchAdmin.setMnemonic(KeyEvent.VK_B);
-
-		createMenuItem(branchAdmin, "Insert Branch...", KeyEvent.VK_I,
-				"Insert Branch");
-
-		createMenuItem(branchAdmin, "Update Branch Name...", KeyEvent.VK_U,
-				"Update Branch");
-
-		createMenuItem(branchAdmin, "Delete Branch...", KeyEvent.VK_D,
-				"Delete Branch");
-
-		JMenuItem menuItem = createMenuItem(branchAdmin, "Show All Branches",
-				KeyEvent.VK_S, "Show Branch");
-		// setup a short cut key for this menu item
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
-				ActionEvent.CTRL_MASK));
-
-		createMenuItem(branchAdmin, "Edit All Branches", KeyEvent.VK_E,
-				"Edit Branch");
-
-		mb.add(branchAdmin);
 	}
 
 	/*
@@ -526,15 +493,6 @@ public class MvbView extends JFrame {
 	 */
 	public void registerControllers() {
 		JMenuItem menuItem;
-
-		// BranchController handles events on the branch admin menu items (i.e.
-		// when they are clicked)
-		BranchController bc = new BranchController(this);
-		
-		for (int i = 0; i < branchAdmin.getItemCount(); i++) {
-			menuItem = branchAdmin.getItem(i);
-			menuItem.addActionListener(bc);
-		}
 		
 		// Register all controllers
 		CustomerController cc = new CustomerController(this);
