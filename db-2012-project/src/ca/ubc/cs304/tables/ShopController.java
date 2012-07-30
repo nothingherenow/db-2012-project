@@ -71,7 +71,7 @@ public class ShopController implements ActionListener, ExceptionListener
 
 	if (actionCommand.equals("Item Add"))
 	{
-		QuantityDialog qDialog= new QuantityDialog(mvb, this);
+		QuantityDialog qDialog= new QuantityDialog(mvb);
 		qDialog.pack();
 		mvb.centerWindow(qDialog);
 		qDialog.setVisible(true);
@@ -84,6 +84,27 @@ public class ShopController implements ActionListener, ExceptionListener
 	    return; 
 	}
 
+	if (actionCommand.equals("Checkout"))
+	{
+		/*CheckoutDialog cDialog= new CheckoutDialog(mvb);
+		cDialog.pack();
+		mvb.centerWindow(cDialog);
+		cDialog.setVisible(true);
+		return;*/
+	}
+	
+	if (actionCommand.equals("Show Cart"))
+	{
+	    showShoppingCart();
+	    return; 
+	}
+	
+	if (actionCommand.equals("Clear Cart"))
+	{
+	    clearShoppingCart();
+	    return; 
+	}
+	
     }
 
 
@@ -153,6 +174,30 @@ public class ShopController implements ActionListener, ExceptionListener
 	mvb.addTable(data);
     }
 
+    /*
+     * This method clears the customer's shopping cart.
+     */
+    private void clearShoppingCart()
+    {
+    shop.clearShoppingCart();
+    
+	ResultSet rs = shop.showShoppingCart();
+	
+	// CustomTableModel maintains the result set's data, e.g., if  
+	// the result set is updatable, it will update the database
+	// when the table's data is modified.  
+	CustomTableModel model = new CustomTableModel(shop.getConnection(), rs);
+	CustomTable data = new CustomTable(model);
+
+	// register to be notified of any exceptions that occur in the model and table
+	model.addExceptionListener(this);
+	data.addExceptionListener(this);
+	    
+	// Adds the table to the scrollpane.
+	// By default, a JTable does not have scroll bars.
+	mvb.addTable(data);
+    }
+    
     /*
      * This class creates a dialog box for searching an item.
      */
@@ -376,6 +421,7 @@ public class ShopController implements ActionListener, ExceptionListener
 	    }
 	}
     }
+    
     /*
      * This class creates a dialog box for adding an item.
      */
@@ -387,7 +433,7 @@ public class ShopController implements ActionListener, ExceptionListener
 	/*
 	 * Constructor. Creates the dialog's GUI.
 	 */
-	public QuantityDialog(JFrame parent, ShopController control)
+	public QuantityDialog(JFrame parent)
 	{
 	    super(parent, "Add item to shopping cart", true);
 	    setResizable(false);
@@ -537,15 +583,19 @@ public class ShopController implements ActionListener, ExceptionListener
 		}
 		
 		if(quantity <= stock){
-			if(shop.claimItems(upc, quantity))
+			if(shop.claimItems(upc, quantity)) {
+				showShoppingCart();
 				return OPERATIONSUCCESS;
+			}
 			else return OPERATIONFAILED;
 		} else {
 			int result = JOptionPane.showConfirmDialog(this, "Not enough stock! Buy " + stock + " instead?" ,
 					"Not enough stock!", JOptionPane.YES_NO_OPTION);
 			if(result == JOptionPane.YES_OPTION) {
-				if(shop.claimItems(upc, stock))
+				if(shop.claimItems(upc, stock)) {
+					showShoppingCart();
 					return OPERATIONSUCCESS;
+				}
 				else return OPERATIONFAILED;
 			} else {
 				return OPERATIONFAILED;
@@ -569,6 +619,198 @@ public class ShopController implements ActionListener, ExceptionListener
 	}
     }
     
+//    /*
+//     * This class creates a dialog box for checking out items.
+//     */
+//    class CheckoutDialog extends JDialog implements ActionListener
+//    {
+//    private JTextField cardNo = new JTextField(16);
+//    private JTextField cardExp = new JTextField(5);
+//	
+//	
+//	/*
+//	 * Constructor. Creates the dialog's GUI.
+//	 */
+//	public CheckoutDialog(JFrame parent)
+//	{
+//	    super(parent, "Add item to shopping cart", true);
+//	    setResizable(false);
+//	    
+//	    JPanel contentPane = new JPanel(new BorderLayout());
+//	    setContentPane(contentPane);
+//	    contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//
+//	    // this panel will contain the text field labels and the text fields.
+//	    JPanel inputPane = new JPanel();
+//	    inputPane.setBorder(BorderFactory.createCompoundBorder(
+//			 new TitledBorder(new EtchedBorder(), "Item fields"), 
+//			 new EmptyBorder(5, 5, 5, 5)));
+//	 
+//	    // add the text field labels and text fields to inputPane
+//	    // using the GridBag layout manager
+//
+//	    GridBagLayout gb = new GridBagLayout();
+//	    GridBagConstraints c = new GridBagConstraints();
+//	    inputPane.setLayout(gb);
+//
+//	    // create and place item quantity label
+//	    JLabel label = new JLabel("Quantity: ", SwingConstants.RIGHT);
+//	    c.gridwidth = GridBagConstraints.RELATIVE;
+//	    c.insets = new Insets(5, 0, 0, 5);
+//	    c.anchor = GridBagConstraints.EAST;
+//	    gb.setConstraints(label, c);
+//	    inputPane.add(label);
+//
+//	    // place item quantity field
+//	    c.gridwidth = GridBagConstraints.REMAINDER;
+//	    c.insets = new Insets(5, 0, 0, 0);
+//	    c.anchor = GridBagConstraints.WEST;
+//	    gb.setConstraints(iquant, c);
+//	    inputPane.add(iquant);
+//
+//	    // when the return key is pressed in the last field
+//	    // of this form, the action performed by the ok button
+//	    // is executed
+//	    iquant.addActionListener(this);
+//	    iquant.setActionCommand("OK");
+//
+//	    // panel for the OK and cancel buttons
+//	    JPanel buttonPane = new JPanel();
+//	    buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+//	    buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+//
+//	    JButton OKButton = new JButton("OK");
+//	    JButton cancelButton = new JButton("Cancel");
+//	    OKButton.addActionListener(this);
+//	    OKButton.setActionCommand("OK");
+//	    cancelButton.addActionListener(new ActionListener()
+//		{
+//		    public void actionPerformed(ActionEvent e)
+//		    {
+//			dispose();
+//		    }
+//		});
+//
+//	    // add the buttons to buttonPane
+//	    buttonPane.add(Box.createHorizontalGlue());
+//	    buttonPane.add(OKButton);
+//	    buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+//	    buttonPane.add(cancelButton);
+//
+//	    contentPane.add(inputPane, BorderLayout.CENTER);
+//	    contentPane.add(buttonPane, BorderLayout.SOUTH);
+//
+//	    addWindowListener(new WindowAdapter() 
+//		{
+//		    public void windowClosing(WindowEvent e)
+//		    {
+//			dispose();
+//		    }
+//		});
+//	}
+//
+//
+//	/*
+//	 * Event handler for the OK button in CustomerInsertDialog
+//	 */ 
+//	public void actionPerformed(ActionEvent e)
+//	{
+//	    String actionCommand = e.getActionCommand();
+//
+//	    if (actionCommand.equals("OK"))
+//	    {
+//		if (validateQuant() != VALIDATIONERROR)
+//		{
+//		    dispose();
+//		}
+//		else
+//		{
+//		    Toolkit.getDefaultToolkit().beep();
+//
+//		    // display a popup to inform the user of the validation error
+//		    JOptionPane errorPopup = new JOptionPane();
+//		    errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+//		}	
+//	    }
+//	}
+//
+//
+//	/*
+//	 * Validates the text fields in ItemSearchDialog and then
+//	 * searches for items if the fields are valid.
+//	 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+//	 * OPERATIONFAILED, VALIDATIONERROR.
+//	 */ 
+//	private int validateQuant()
+//	{
+//	    try
+//	    {
+//		int quantity;
+//		
+//		if (iquant.getText().trim().length() != 0)
+//		{
+//			if(isNumeric(iquant.getText().trim()))
+//				quantity = Integer.valueOf(iquant.getText().trim()).intValue();
+//			else return VALIDATIONERROR;
+//		    if(quantity <= 0)
+//		    	return VALIDATIONERROR;
+//		}
+//		else
+//		{
+//		    return VALIDATIONERROR;
+//		}
+//
+//		int stock = -1;
+//		
+//		try {
+//			rs.absolute(table.getSelectedRow()+1);
+//			stock = rs.getInt(5);
+//		} catch (SQLException e) {
+//			mvb.updateStatusBar(e.getMessage());
+//			return VALIDATIONERROR;
+//		}
+//		
+//		int upc = -1;
+//		
+//		try {
+//			rs.absolute(table.getSelectedRow()+1);
+//			upc = rs.getInt(1);
+//		} catch (SQLException e) {
+//			mvb.updateStatusBar(e.getMessage());
+//			return VALIDATIONERROR;
+//		}
+//		
+//		if(quantity <= stock){
+//			if(shop.claimItems(upc, quantity))
+//				return OPERATIONSUCCESS;
+//			else return OPERATIONFAILED;
+//		} else {
+//			int result = JOptionPane.showConfirmDialog(this, "Not enough stock! Buy " + stock + " instead?" ,
+//					"Not enough stock!", JOptionPane.YES_NO_OPTION);
+//			if(result == JOptionPane.YES_OPTION) {
+//				if(shop.claimItems(upc, stock))
+//					return OPERATIONSUCCESS;
+//				else return OPERATIONFAILED;
+//			} else {
+//				return OPERATIONFAILED;
+//			}
+//		}
+//	    }
+//	    catch (NumberFormatException ex)
+//	    {
+//		// this exception is thrown when a string 
+//		// cannot be converted to a number
+//		return VALIDATIONERROR; 
+//	    }
+//	}
+//	private boolean isNumeric(String string) {
+//		try {
+//			Double.valueOf(string);
+//		} catch (NumberFormatException ex) {
+//			return false;
+//		}
+//		return true;
+//	}
+//    }
 }
-
 

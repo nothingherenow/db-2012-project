@@ -139,6 +139,7 @@ public class MvbView extends JFrame {
 		cust = new JMenu("Customer");
 		
 		cust.setMnemonic(KeyEvent.VK_C);
+		
 		createMenuItem(cust, "Search for item...", KeyEvent.VK_S,
 				"Item Search");
 		custAddItem = createMenuItem(cust, "Add selected item to shopping cart...", KeyEvent.VK_A,
@@ -146,6 +147,12 @@ public class MvbView extends JFrame {
 		custAddItem.setEnabled(false);
 		createMenuItem(cust, "Show shopping cart...", KeyEvent.VK_C,
 				"Show Cart");
+		
+		createMenuItem(cust, "Checkout shopping cart...", KeyEvent.VK_O,
+				"Checkout");
+		
+		createMenuItem(cust, "Clear shopping cart...", KeyEvent.VK_L,
+				"Clear Cart");
 		
 		mb.add(cust);
 	}

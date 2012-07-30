@@ -91,26 +91,131 @@ public class ShopTransactions {
 
 	public boolean claimItems(int upc, int quantity) {
 		String login = LoginWindow.getLogin();
-		
+
 		try
 		{
 			ps = con.prepareStatement("INSERT INTO shoppingcart " +
 					"VALUES(?,?,?)");
-			
+
 			ps.setString(1, login);
-			
+
 			ps.setInt(2, upc);
-			
+
 			ps.setInt(3, quantity);
-			
+
 			ps.executeUpdate();
-			
+
 			ps = con.prepareStatement("UPDATE Item SET stock = (stock - ?) WHERE upc = ?");
 
 			ps.setInt(1, quantity);
 
 			ps.setInt(2, upc);
 
+			ps.executeUpdate();
+
+			con.commit();
+
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+
+	/*
+	 * Returns a ResultSet containing customer's shopping cart. The ResultSet is
+	 * scroll insensitive and read only. If there is an error, null
+	 * is returned.
+	 */ 
+	public ResultSet showShoppingCart()
+	{
+		String login = LoginWindow.getLogin();
+
+		try
+		{	 
+			ps = con.prepareStatement("SELECT s.upc, i.title, s.quantity " +
+					"FROM shoppingcart s, item i " +
+					"WHERE s.upc = i.upc AND s.cid = ?", 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			ps.setString(1, login);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+
+	public BigDecimal totalAmount() {
+		String login = LoginWindow.getLogin();
+
+		try {
+			ps = con.prepareStatement("SELECT SUM(i.price * s.quantity),  " +
+					"FROM Item i, Shoppingcart s " +
+					"WHERE i.upc = s.upc AND s.cid = ?");
+
+			ps.setString(1, login);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs.getBigDecimal(1);
+			
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+
+	public boolean clearShoppingCart() {
+		String login = LoginWindow.getLogin();
+
+		try
+		{
+			ps = con.prepareStatement(
+					"UPDATE Item I " +
+					"SET stock = (SELECT stock + quantity " +
+									"FROM Shoppingcart " +
+									"WHERE Shoppingcart.upc = I.upc " +
+									"AND Shoppingcart.cid = ?) " +
+					"WHERE EXISTS (SELECT s.upc FROM Shoppingcart s WHERE I.upc = s.upc AND s.cid = ?)");
+			
+			ps.setString(1, login);
+			
+			ps.setString(2, login);
+			
+			ps.executeUpdate();
+			
+			ps = con.prepareStatement("DELETE FROM Shoppingcart " +
+					"WHERE cid = ?");
+			
+			ps.setString(1, login);
+			
 			ps.executeUpdate();
 			
 			con.commit();
@@ -135,39 +240,6 @@ public class ShopTransactions {
 			}
 		}
 	}
-	
-	/*
-     * Returns a ResultSet containing customer's shopping cart. The ResultSet is
-     * scroll insensitive and read only. If there is an error, null
-     * is returned.
-     */ 
-    public ResultSet showShoppingCart()
-    {
-    	String login = LoginWindow.getLogin();
-    	
-	try
-	{	 
-	    ps = con.prepareStatement("SELECT s.upc, i.title, s.quantity " +
-	    		"FROM shoppingcart s, item i " +
-	    		"WHERE s.upc = i.upc AND s.cid = ?", 
-				      ResultSet.TYPE_SCROLL_INSENSITIVE,
-				      ResultSet.CONCUR_READ_ONLY);
-	    
-	    ps.setString(1, login);
-
-	    ResultSet rs = ps.executeQuery();
-
-	    return rs; 
-	}
-	catch (SQLException ex)
-	{
-	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-	    fireExceptionGenerated(event);
-	    // no need to commit or rollback since it is only a query
-
-	    return null; 
-	}
-    }
 	
 	/*
 	 * Returns the database connection used by this customer model
