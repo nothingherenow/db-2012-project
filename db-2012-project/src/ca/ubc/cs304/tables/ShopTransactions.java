@@ -12,6 +12,8 @@ import ca.ubc.cs304.main.MvbOracleConnection;
 
 public class ShopTransactions {
 
+	protected static int MAXIMUM_DAILY_TRANSACTIONS = 50;
+
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null;
@@ -137,6 +139,35 @@ public class ShopTransactions {
 	}
 
 	/*
+	 * Determines whether or not the current customer's shopping cart is empty.
+	 */ 
+	public boolean isCartEmpty()
+	{
+		String login = LoginWindow.getLogin();
+
+		try
+		{	 
+			ps = con.prepareStatement("SELECT upc FROM shoppingcart WHERE cid = ?", 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			ps.setString(1, login);
+
+			ResultSet rs = ps.executeQuery();
+
+			return !rs.first();
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return false; 
+		}
+	}
+
+	/*
 	 * Returns a ResultSet containing customer's shopping cart. The ResultSet is
 	 * scroll insensitive and read only. If there is an error, null
 	 * is returned.
@@ -147,7 +178,7 @@ public class ShopTransactions {
 
 		try
 		{	 
-			ps = con.prepareStatement("SELECT s.upc, i.title, s.quantity " +
+			ps = con.prepareStatement("SELECT s.upc, i.title, s.quantity , i.sellPrice AS price " +
 					"FROM shoppingcart s, item i " +
 					"WHERE s.upc = i.upc AND s.cid = ?", 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -169,11 +200,14 @@ public class ShopTransactions {
 		}
 	}
 
+	/*
+	 * Calculates the total cost of the customer's shopping cart
+	 */
 	public BigDecimal totalAmount() {
 		String login = LoginWindow.getLogin();
 
 		try {
-			ps = con.prepareStatement("SELECT SUM(i.price * s.quantity),  " +
+			ps = con.prepareStatement("SELECT SUM(i.sellPrice * s.quantity) " +
 					"FROM Item i, Shoppingcart s " +
 					"WHERE i.upc = s.upc AND s.cid = ?");
 
@@ -181,8 +215,10 @@ public class ShopTransactions {
 
 			ResultSet rs = ps.executeQuery();
 
+			rs.next();
+
 			return rs.getBigDecimal(1);
-			
+
 		} catch (SQLException ex) {
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
@@ -192,6 +228,10 @@ public class ShopTransactions {
 		}
 	}
 
+
+	/*
+	 * Clears the current customer's shopping cart and updates stock
+	 */
 	public boolean clearShoppingCart() {
 		String login = LoginWindow.getLogin();
 
@@ -199,25 +239,25 @@ public class ShopTransactions {
 		{
 			ps = con.prepareStatement(
 					"UPDATE Item I " +
-					"SET stock = (SELECT stock + quantity " +
-									"FROM Shoppingcart " +
-									"WHERE Shoppingcart.upc = I.upc " +
-									"AND Shoppingcart.cid = ?) " +
+							"SET stock = (SELECT stock + quantity " +
+							"FROM Shoppingcart " +
+							"WHERE Shoppingcart.upc = I.upc " +
+							"AND Shoppingcart.cid = ?) " +
 					"WHERE EXISTS (SELECT s.upc FROM Shoppingcart s WHERE I.upc = s.upc AND s.cid = ?)");
-			
+
 			ps.setString(1, login);
-			
+
 			ps.setString(2, login);
-			
+
 			ps.executeUpdate();
-			
+
 			ps = con.prepareStatement("DELETE FROM Shoppingcart " +
 					"WHERE cid = ?");
-			
+
 			ps.setString(1, login);
-			
+
 			ps.executeUpdate();
-			
+
 			con.commit();
 
 			return true; 
@@ -240,7 +280,79 @@ public class ShopTransactions {
 			}
 		}
 	}
-	
+
+	/*
+	 * Buys the items in the customer's shopping cart and returns the expected number of days to delivery 
+	 * if successful, -1 if not.
+	 */
+	public int checkout(String cardno, Date expire) {
+		String login = LoginWindow.getLogin();
+
+		try
+		{
+			ps = con.prepareStatement("SELECT count(receiptID) FROM Purchase WHERE deliveredDate IS NULL");
+
+			ResultSet rs = ps.executeQuery();
+
+			rs.next();
+
+			int pendingOrders = rs.getInt(1);
+
+			int deliverDate = pendingOrders / MAXIMUM_DAILY_TRANSACTIONS + 1;
+
+			ps = con.prepareStatement(
+					"INSERT INTO Purchase VALUES(receipt_counter.nextval, sysdate, ?, ?, ?, " +
+					"sysdate + ?, null)");
+
+			ps.setString(1, login);
+
+			ps.setString(2, cardno);
+
+			ps.setDate(3, expire);
+
+			ps.setInt(4, deliverDate);
+
+			ps.executeUpdate();
+
+			ps = con.prepareStatement("INSERT INTO PurchaseItem " +
+					"SELECT receipt_counter.currval, s.upc, s.quantity " +
+					"FROM Shoppingcart s " +
+					"WHERE s.cid = ?");
+
+			ps.setString(1, login);
+
+			ps.executeUpdate();
+
+			ps = con.prepareStatement("DELETE FROM Shoppingcart " +
+					"WHERE cid = ?");
+
+			ps.setString(1, login);
+
+			ps.executeUpdate();
+
+			con.commit();
+
+			return deliverDate;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return -1; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return -1; 
+			}
+		}
+	}
+
 	/*
 	 * Returns the database connection used by this customer model
 	 */

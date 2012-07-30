@@ -84,7 +84,7 @@ public class MvbView extends JFrame {
 		// indent first menu
 		menuBar.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		// sets up the administration menus and adds them to the menu bar
+		// sets up the menus and adds them to the menu bar
 		setupAdmins(menuBar);
 		setupCustomerMenu(menuBar);
 
