@@ -9,7 +9,7 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbOracleConnection;
 
-public class ItemModel {
+public class ShopTransactions {
 
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
@@ -20,7 +20,7 @@ public class ItemModel {
 	 * Default constructor Precondition: The Connection object in
 	 * MvbOracleConnection must be a valid database connection.
 	 */
-	public ItemModel() {
+	public ShopTransactions() {
 		con = MvbOracleConnection.getInstance().getConnection();
 	}
 
@@ -253,6 +253,70 @@ public class ItemModel {
 	}
     }
 	
+    /*
+     * Returns a ResultSet containing items matching input parameters. The ResultSet is
+     * scroll insensitive and read only. If there is an error, null is returned.
+     */ 
+    public ResultSet searchItems(String title, String category, String lead)
+    {
+	try
+	{	 
+		// count non-null args
+		int argCount = 0;
+		int currentArg = 1;
+		
+		if(title != null) argCount++;
+		if(category != null) argCount++;
+		if(lead != null) argCount++;
+		
+		int argsLeft = argCount;
+		// Customize query depending on given parameters
+		StringBuffer statement = new StringBuffer("SELECT i.upc, i.title, i.category, l.name AS leadingsinger" +
+	    		", i.stock FROM item i , leadsinger l WHERE ");
+		if(title != null) {
+			statement.append("i.title = ?");
+			argsLeft--;
+			if(argsLeft > 0) statement.append(" AND ");
+		}
+		if(category != null) {
+			statement.append("i.category = ?");
+			argsLeft--;
+			if(argsLeft > 0) statement.append(" AND ");
+		}
+		if(lead != null) {
+			statement.append("l.name = ?");
+		}
+		
+	    ps = con.prepareStatement(statement.toString(), 
+				      ResultSet.TYPE_SCROLL_INSENSITIVE,
+				      ResultSet.CONCUR_READ_ONLY);
+
+	    if(title != null) {
+	    	ps.setString(1, title);
+	    	currentArg++;
+	    }
+	    if(category != null) {
+	    	ps.setString(currentArg, category);
+	    	currentArg++;
+	    }
+	    if(lead != null) {
+	    	ps.setString(currentArg, lead);
+	    }
+	    
+	    ResultSet rs = ps.executeQuery();
+
+	    return rs; 
+	}
+	catch (SQLException ex)
+	{
+	    ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    fireExceptionGenerated(event);
+	    // no need to commit or rollback since it is only a query
+
+	    return null; 
+	}
+    }
+    
 	/*
      * Returns the database connection used by this customer model
      */

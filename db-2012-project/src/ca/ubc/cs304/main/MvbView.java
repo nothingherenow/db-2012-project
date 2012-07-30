@@ -18,6 +18,7 @@ import ca.ubc.cs304.tables.ReturnController;
 import ca.ubc.cs304.tables.ReturnItemController;
 import ca.ubc.cs304.tables.ShipItemController;
 import ca.ubc.cs304.tables.ShipmentController;
+import ca.ubc.cs304.tables.ShopController;
 
 /*
  * MvbView allows a user to view and manipulate the branch table.
@@ -43,6 +44,9 @@ public class MvbView extends JFrame {
 
 	// The top level admin menu
 	private JMenu admin;
+	
+	// the top level customer menu
+	private JMenu cust;
 	
 	// the admin menus
 	private JMenu custAdmin;
@@ -81,6 +85,7 @@ public class MvbView extends JFrame {
 
 		// sets up the administration menus and adds them to the menu bar
 		setupAdmins(menuBar);
+		setupCustomerMenu(menuBar);
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -129,6 +134,18 @@ public class MvbView extends JFrame {
 		setupShipmentAdminMenu(admin);
 	}
 
+	private void setupCustomerMenu(JMenuBar mb) {
+		cust = new JMenu("Customer");
+		
+		cust.setMnemonic(KeyEvent.VK_C);
+		createMenuItem(cust, "Search for item...", KeyEvent.VK_S,
+				"Item Search");
+		createMenuItem(cust, "Show shopping cart...", KeyEvent.VK_C,
+				"Show Cart");
+		
+		mb.add(cust);
+	}
+	
 	/*
 	 * Adds menu items to the Customer menu and then adds the menu to the
 	 * menubar
@@ -563,6 +580,13 @@ public class MvbView extends JFrame {
 		for (int i = 0; i < shipItemAdmin.getItemCount(); i++) {
 			menuItem = shipItemAdmin.getItem(i);
 			menuItem.addActionListener(sic);
+		}
+		
+		ShopController shc = new ShopController(this);
+		
+		for (int i = 0; i < cust.getItemCount(); i++) {
+			menuItem = cust.getItem(i);
+			menuItem.addActionListener(shc);
 		}
 	}
 

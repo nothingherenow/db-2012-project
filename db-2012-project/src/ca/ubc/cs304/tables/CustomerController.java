@@ -361,7 +361,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		String caddr;
 		String cphone;
 
-		if (custID.getText().trim().length() != 0 && isNumeric(custID.getText()))
+		if (custID.getText().trim().length() != 0)
 		{
 		    cid = custID.getText().trim();
 		}
