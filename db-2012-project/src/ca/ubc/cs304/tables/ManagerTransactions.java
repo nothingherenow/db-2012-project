@@ -116,15 +116,15 @@ public ResultSet processShipment(int sid)
 	 * Manager sets the delivered date for an order. 
 	 * Returns true if the change has been successfully made, returns false otherwise.
 	 */
-	public boolean setDeliveredDate(int receiptNo, Date deliveredDate){
+	public boolean setDeliveredDate(int receiptID, Date deliveredDate){
 		try {
 			ps = con.prepareStatement(
 					"UPDATE Purchase " +
 					"SET deliveredDate = ? " +
-					"WHERE receiptNo = ?");
+					"WHERE receiptID = ?");
 			
 			ps.setDate(1, deliveredDate);
-			ps.setInt(2, receiptNo);
+			ps.setInt(2, receiptID);
 			
 			ps.executeUpdate();
 			
