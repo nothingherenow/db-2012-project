@@ -37,7 +37,7 @@ public class ManagerTransactions {
     				"SELECT title, category, stock, NumCopiesSold " +
     				"FROM item " +
     				"WHERE upc IN ( " +
-    					"SELECT pi.upc, SUM (pi.quantity) AS \"NumCopiesSold\" " + 
+    					"SELECT pi.upc, SUM (pi.quantity) AS NumCopiesSold " + 
     					"FROM purchaseitem pi, purchase p " +
     					"WHERE p.date = ? AND pi.receiptID = p.receiptID " +
     					"GROUP BY pi.upc " +
