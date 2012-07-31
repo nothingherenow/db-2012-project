@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 
 public class ManagerController implements ActionListener, ExceptionListener {
 	private MvbView mvb;
-	private ManagerTransactions manage = null;
+	// private ManagerTransactions manage = null;
 	private JTable table = null;
 	private ResultSet rs = null;
 
@@ -33,10 +33,10 @@ public class ManagerController implements ActionListener, ExceptionListener {
 
 	public ManagerController(MvbView mvb) {
 		this.mvb = mvb;
-		manage = new ManagerTransactions();
+		// manage = new ManagerTransactions();
 
-		//register to receive exception events from manager
-		manage.addExceptionListener(this);
+		// register to receive exception events from manager
+		// manage.addExceptionListener(this);
 	}
 	
 	/*
@@ -46,8 +46,16 @@ public class ManagerController implements ActionListener, ExceptionListener {
 		String actionCommand = e.getActionCommand();
 
 		/*
-		if (actionCommand.equals("Set Delivery Date")) {
-			SetDeliveryDialog iDialog = new SetDeliveryDialog(mvb);
+		if (actionCommand.equals("Shipment")) {
+			ShipmentDialog iDialog = new ShipmentDialog(mvb);
+			iDialog.pack();
+			mvb.centerWindow(iDialog);
+			iDialog.setVisible(true);
+			return;
+		}
+
+		if (actionCommand.equals("Delivery")) {
+			DeliveryDialog iDialog = new DeliveryDialog(mvb);
 			iDialog.pack();
 			mvb.centerWindow(iDialog);
 			iDialog.setVisible(true);
@@ -98,21 +106,7 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	 */
 	private void showDailySales()
 	{
-		// ResultSet rs = manage.showDailySales();
-
-		// CustomTableModel maintains the result set's data, e.g., if  
-		// the result set is updatable, it will update the database
-		// when the table's data is modified.  
-		CustomTableModel model = new CustomTableModel(manage.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		// register to be notified of any exceptions that occur in the model and table
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
-		// Adds the table to the scrollpane.
-		// By default, a JTable does not have scroll bars.
-		mvb.addTable(data);
+	// SQL transaction method from ManagerTransactions goes here
 	}
 	
 	/*
@@ -123,9 +117,6 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	// SQL transaction method from ManagerTransactions goes here
 	}
 	
-	private int validateDate(){
-		
-		return 1;
-	}
+	
 
 }
