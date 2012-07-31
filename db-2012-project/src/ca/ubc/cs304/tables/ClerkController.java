@@ -78,27 +78,30 @@ public class ClerkController implements ActionListener, ExceptionListener {
 			mvb.updateStatusBar("An exception occurred!");
 		}
 	}
-	
+
 	/*
-	 * This method displays the customer's shopping cart in a non-editable JTable
+	 * This method displays the customer's shopping cart in a non-editable
+	 * JTable
 	 */
-	private void showBill()
-	{
-		//ResultSet rs = clerk.showPurchaseItem(); show all the items lined up to be purchased
+	private void showBill() {
+		// ResultSet rs = clerk.showPurchaseItem(); show all the items lined up
+		// to be purchased
 
-		// CustomTableModel maintains the result set's data, e.g., if  
+		// CustomTableModel maintains the result set's data, e.g., if
 		// the result set is updatable, it will update the database
-		// when the table's data is modified.  
-		//CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
-		//CustomTable data = new CustomTable(model);
+		// when the table's data is modified.
+		// CustomTableModel model = new CustomTableModel(clerk.getConnection(),
+		// rs);
+		// CustomTable data = new CustomTable(model);
 
-		// register to be notified of any exceptions that occur in the model and table
-		//model.addExceptionListener(this);
-		//data.addExceptionListener(this);
+		// register to be notified of any exceptions that occur in the model and
+		// table
+		// model.addExceptionListener(this);
+		// data.addExceptionListener(this);
 
 		// Adds the table to the scrollpane.
 		// By default, a JTable does not have scroll bars.
-		//mvb.addTable(data);
+		// mvb.addTable(data);
 	}
 
 	// This class creates a dialog box for Checking out items in store.
@@ -244,21 +247,21 @@ public class ClerkController implements ActionListener, ExceptionListener {
 		 */
 		private int validateAdd() {
 			try {
-				String iupc;
-				String iquant;
+				Integer iupc;
+				Integer iquant;
 
 				// Disallow blank searches
 				if (upc.getText().trim().length() != 0) {
-					iupc = upc.getText().trim();
+					iupc = Integer.valueOf(upc.getText().trim());
 				} else {
 					return VALIDATIONERROR;
 				}
 
 				// Default adds 1 item per upc
 				if (quant.getText().trim().length() != 0) {
-					iquant = quant.getText().trim();
+					iquant = Integer.valueOf(quant.getText().trim());
 				} else {
-					iquant = "1";
+					iquant = 1;
 				}
 
 				mvb.updateStatusBar("Adding Item to Bill...");
@@ -268,7 +271,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 				mvb.updateStatusBar("Add to bill complete.");
 
-				showBill(); //Shows the entered items in a table
+				showBill(); // Shows the entered items in a table
 
 				return OPERATIONSUCCESS;
 
@@ -278,7 +281,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				return VALIDATIONERROR;
 			}
 		}
-		
+
 		/*
 		 * Validates the text fields in CheckoutStoreDialog and then adds the
 		 * items to the bill if the fields are valid. Returns the operation
@@ -294,7 +297,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 				mvb.updateStatusBar("Checkout complete.");
 
-				//print receipt method goes here
+				// print receipt method goes here
 
 				return OPERATIONSUCCESS;
 
@@ -313,6 +316,8 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	class ReturnDialog extends JDialog implements ActionListener {
 
 		private JTextField rid = new JTextField(12);
+		private JTextField upc = new JTextField(12);
+		private JTextField quant = new JTextField(12);
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -355,11 +360,41 @@ public class ClerkController implements ActionListener, ExceptionListener {
 			gb.setConstraints(rid, c);
 			inputPane.add(rid);
 
+			// create and place upc label
+			label = new JLabel("UPC: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(upc, c);
+			inputPane.add(upc);
+
+			// create and place quantity label
+			label = new JLabel("Quantity: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place quantity field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(quant, c);
+			inputPane.add(quant);
+
 			// when the return key is pressed in the last field
 			// of this form, the action performed by the ok button
 			// is executed
-			rid.addActionListener(this);
-			rid.setActionCommand("OK");
+			quant.addActionListener(this);
+			quant.setActionCommand("OK");
 
 			// panel for the OK and cancel buttons
 			JPanel buttonPane = new JPanel();
@@ -421,14 +456,30 @@ public class ClerkController implements ActionListener, ExceptionListener {
 		 */
 		private int validateRid() {
 			try {
-				String receiptId;
+				Integer receiptId;
+				Integer rupc;
+				Integer quantity;
 
 				// Disallow blank searches
 				if (rid.getText().trim().length() != 0) {
-					receiptId = rid.getText().trim();
+					receiptId = Integer.valueOf(rid.getText().trim());
 				} else {
 					return VALIDATIONERROR;
 				}
+				
+				if (upc.getText().trim().length() != 0) {
+					rupc = Integer.valueOf(upc.getText().trim());
+				} else {
+					return VALIDATIONERROR;
+				}
+				
+				if (quant.getText().trim().length() != 0) {
+					quantity = Integer.valueOf(quant.getText().trim());
+				} else {
+					return VALIDATIONERROR;
+				}
+				
+				
 
 				mvb.updateStatusBar("Validating Receipt ID...");
 
