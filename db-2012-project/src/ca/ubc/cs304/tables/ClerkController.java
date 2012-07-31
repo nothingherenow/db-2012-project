@@ -21,9 +21,8 @@ import java.text.SimpleDateFormat;
 public class ClerkController implements ActionListener, ExceptionListener {
 
 	private MvbView mvb;
-	// private ClerkTransactions clerk = null;
-	private JTable table = null;
-	private ResultSet rs = null;
+	private ClerkTransactions clerk = null;
+	private PurchaseModel purch = null;
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -32,10 +31,11 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 	public ClerkController(MvbView mvb) {
 		this.mvb = mvb;
-		// clerk = new ClerkTransactions();
+		clerk = new ClerkTransactions();
+		purch = new PurchaseModel();
 
 		// register to receive exception events from customer
-		// clerk.addExceptionListener(this);
+		clerk.addExceptionListener(this);
 	}
 
 	/*
@@ -266,7 +266,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 				mvb.updateStatusBar("Adding Item to Bill...");
 
-				// ADD PURCHASE ITEM TRANSACTION METHOD GOES HERE
+				
 				// if add fails: else return OPERATIONFAILED
 
 				mvb.updateStatusBar("Add to bill complete.");
@@ -466,28 +466,32 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				} else {
 					return VALIDATIONERROR;
 				}
-				
+
 				if (upc.getText().trim().length() != 0) {
 					rupc = Integer.valueOf(upc.getText().trim());
 				} else {
 					return VALIDATIONERROR;
 				}
-				
+
 				if (quant.getText().trim().length() != 0) {
 					quantity = Integer.valueOf(quant.getText().trim());
 				} else {
 					return VALIDATIONERROR;
 				}
-				
-				
 
 				mvb.updateStatusBar("Validating Receipt ID...");
 
-				// PROCESS RETURN TRANSACTION METHOD GOES HERE
+				if (clerk.checkReturn(receiptId) != true){
+					mvb.updateStatusBar("Invalid Receipt ID");
+					return OPERATIONFAILED;
+				}
 
 				mvb.updateStatusBar("Validation complete.");
 
-				// PRINT RECEIPT METHOD GOES HERE
+				if (clerk.processReturn(receiptId, rupc, quantity) == 0){
+					mvb.updateStatusBar("Database error");
+					return OPERATIONFAILED;
+				}
 
 				return OPERATIONSUCCESS;
 

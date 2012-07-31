@@ -120,7 +120,8 @@ public class ClerkTransactions {
 	public boolean checkReturn(Integer rid){
 		try 
 		{
-			ps = con.prepareStatement("SELECT * FROM Purchase p WHERE p.receiptID = ?");
+			ps = con.prepareStatement("SELECT * FROM Purchase p WHERE p.receiptID = ?", 
+					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.FETCH_UNKNOWN);
 			ps.setInt(1,  rid);
 			ResultSet rs = ps.executeQuery();
 			rs.beforeFirst();
