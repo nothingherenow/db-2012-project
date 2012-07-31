@@ -37,7 +37,7 @@ public class ClerkTransactions {
 		try
 		{
 			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null" +
-		", null, null, null, null ");
+		", null, null, null, null");
 		
 			ps.executeUpdate();
 		
@@ -51,6 +51,36 @@ public class ClerkTransactions {
 			
 			return receiptid;
 					
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return 0; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+	
+	public int updateCrediCard(Integer rid, String cardno, Date cexpire) {
+		try {
+			ps = con.prepareStatement("UPDATE Purchase SET cardno = ?, expire = ? WHERE receiptID = ?");
+			ps.setString(1, cardno);
+			ps.setDate(2, (java.sql.Date) cexpire);
+			ps.setInt(3, rid);
+			ps.executeUpdate();
+			
+			con.commit();
+			return 1;
 		}
 		catch (SQLException ex)
 		{
