@@ -46,16 +46,8 @@ public class ManagerController implements ActionListener, ExceptionListener {
 		String actionCommand = e.getActionCommand();
 
 		/*
-		if (actionCommand.equals("Shipment")) {
-			ShipmentDialog iDialog = new ShipmentDialog(mvb);
-			iDialog.pack();
-			mvb.centerWindow(iDialog);
-			iDialog.setVisible(true);
-			return;
-		}
-
-		if (actionCommand.equals("Delivery")) {
-			DeliveryDialog iDialog = new DeliveryDialog(mvb);
+		if (actionCommand.equals("Set Delivery Date")) {
+			SetDeliveryDialog iDialog = new SetDeliveryDialog(mvb);
 			iDialog.pack();
 			mvb.centerWindow(iDialog);
 			iDialog.setVisible(true);
@@ -131,6 +123,9 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	// SQL transaction method from ManagerTransactions goes here
 	}
 	
-	
+	private int validateDate(){
+		
+		return 1;
+	}
 
 }
