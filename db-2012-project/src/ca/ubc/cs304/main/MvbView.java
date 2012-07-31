@@ -147,10 +147,12 @@ public class MvbView extends JFrame {
 		cust.setMnemonic(KeyEvent.VK_C);
 
 		createMenuItem(cust, "Search for item...", KeyEvent.VK_S, "Item Search");
+		
 		custAddItem = createMenuItem(cust,
 				"Add selected item to shopping cart...", KeyEvent.VK_A,
 				"Item Add");
 		custAddItem.setEnabled(false);
+		
 		createMenuItem(cust, "Show shopping cart...", KeyEvent.VK_C,
 				"Show Cart");
 
@@ -549,14 +551,12 @@ public class MvbView extends JFrame {
 	}
 
 	/*
-	 * This method adds the given JTable into tableScrPane, also allowing
-	 * customer to checkout items
+	 * This method enables the "add item" menu item in the customer transactions.
 	 */
-	public void addShoppingTable(JTable data) {
-		tableScrPane.setViewportView(data);
+	public void enableAddItem() {
 		custAddItem.setEnabled(true);
 	}
-
+	
 	/*
 	 * This method registers the controllers for all items in each menu. This
 	 * method should only be executed once.
