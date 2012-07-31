@@ -13,9 +13,7 @@ import ca.ubc.cs304.main.CustomTableModel;
 import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbView;
-import ca.ubc.cs304.tables.ShopController.ItemSearchDialog;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

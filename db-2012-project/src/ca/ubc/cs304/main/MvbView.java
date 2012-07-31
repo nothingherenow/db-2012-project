@@ -13,6 +13,7 @@ import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ItemController;
 import ca.ubc.cs304.tables.LeadSingerController;
+import ca.ubc.cs304.tables.ManagerController;
 import ca.ubc.cs304.tables.PurchaseController;
 import ca.ubc.cs304.tables.PurchaseItemController;
 import ca.ubc.cs304.tables.ReturnController;
@@ -648,14 +649,13 @@ public class MvbView extends JFrame {
 			menuItem.addActionListener(clkc);
 		}
 		
-		/* For Later use with implemented manager transactions
 		ManagerController manc = new ManagerController(this);
 
 		for (int i = 0; i < manage.getItemCount(); i++) {
 			menuItem = manage.getItem(i);
 			menuItem.addActionListener(manc);
 		}
-		*/
+		
 
 	}
 
