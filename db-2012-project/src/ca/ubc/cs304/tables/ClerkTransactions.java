@@ -71,7 +71,7 @@ public class ClerkTransactions {
 		}
 	}
 	
-	public int updateCrediCard(Integer rid, String cardno, Date cexpire) {
+	public int updateCreditCard(Integer rid, String cardno, Date cexpire) {
 		try {
 			ps = con.prepareStatement("UPDATE Purchase SET cardno = ?, expire = ? WHERE receiptID = ?");
 			ps.setString(1, cardno);
