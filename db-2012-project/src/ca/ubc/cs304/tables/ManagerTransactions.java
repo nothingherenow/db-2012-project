@@ -34,7 +34,7 @@ public class ManagerTransactions {
     	try
     	{	
     		ps = con.prepareStatement(
-    				"SELECT title, category, stock, NumCopiesSold " +
+    				"SELECT title, company, stock, NumCopiesSold " +
     				"FROM item " +
     				"WHERE upc IN ( " +
     					"SELECT pi.upc, SUM (pi.quantity) AS NumCopiesSold " + 
@@ -97,8 +97,9 @@ public ResultSet processShipment(int sid)
 
 				ps.executeUpdate();
 
-				con.commit();
 			}
+			
+			con.commit();
 
 			return rs;
 		}
@@ -152,6 +153,89 @@ public ResultSet processShipment(int sid)
 		}
 		
 	}
+	
+	public ResultSet showDailyReportAllItems(Date date){
+		try {
+			ps = con.prepareStatement(
+					"SELECT i.upc, i.category, i.price, SUM(pi.quantity) AS totalUnits, SUM(i.sellPrice) AS totalCost " +
+					"FROM Purchase p, PurchaseItem pi, Item i " +
+					"WHERE pi.receiptID = i.receiptID AND pi.upc = i.upc AND p.date = ?" +
+					"GROUP BY pi.upc, i.category");
+			
+			ps.setDate(1, date);
+			
+			ps.executeUpdate();
+			
+			con.commit();
+			
+			ResultSet rs = ps.executeQuery();
+			
+			return rs; 
+		}
+			
+			catch (SQLException ex) {
+	    		ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    		fireExceptionGenerated(event);
+	    		// no need to commit or rollback since it is only a query
+
+	    		return null;
+	    	}
+		}
+	
+	public ResultSet showDailyReportCategorialTotal(Date date){
+		try {
+			ps = con.prepareStatement(
+					"SELECT i.category, SUM(pi.quantity) AS totalSaleCategory, SUM(i.sellPrice) AS totalCategoryCost "  +
+					"FROM Purchase p, PurchaseItem pi, Item i " +
+					"WHERE pi.receiptID = i.receiptID AND pi.upc = i.upc AND p.date = ?" +
+					"GROUP BY i.category");
+			
+			ps.setDate(1, date);
+			
+			ps.executeUpdate();
+			
+			con.commit();
+			
+			ResultSet rs = ps.executeQuery();
+			
+			return rs; 
+		}
+			
+			catch (SQLException ex) {
+	    		ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    		fireExceptionGenerated(event);
+	    		// no need to commit or rollback since it is only a query
+
+	    		return null;
+	    	}
+		}
+	
+	public ResultSet showDailyReportTotal(Date date){
+		try {
+			ps = con.prepareStatement(
+					"SELECT SUM(pi.quantity) AS totalSalesOverall, SUM(i.sellPrice) AS totalMoneyMade "  +
+					"FROM Purchase p, PurchaseItem pi, Item i " +
+					"WHERE p.receiptID = pi.receiptID AND pi.upc = i.upc AND p.date = ?");
+			
+			ps.setDate(1, date);
+			
+			ps.executeUpdate();
+			
+			con.commit();
+			
+			ResultSet rs = ps.executeQuery();
+			
+			return rs; 
+		}
+			
+			catch (SQLException ex) {
+	    		ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+	    		fireExceptionGenerated(event);
+	    		// no need to commit or rollback since it is only a query
+
+	    		return null;
+	    	}
+		}
 
 	/*
  	* Returns the database connection used by this customer model
