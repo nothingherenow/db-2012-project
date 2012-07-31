@@ -48,6 +48,8 @@ public class MvbView extends JFrame {
 	// the top level customer menu
 	private JMenu cust;
 	private JMenuItem custAddItem;
+	private JMenu clrk;
+	private JMenu manage;
 	
 	// the admin menus
 	private JMenu custAdmin;
@@ -87,6 +89,8 @@ public class MvbView extends JFrame {
 		// sets up the menus and adds them to the menu bar
 		setupAdmins(menuBar);
 		setupCustomerMenu(menuBar);
+		setupClerkMenu(menuBar);
+		setupManagerMenu(menuBar);
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -157,6 +161,39 @@ public class MvbView extends JFrame {
 		mb.add(cust);
 	}
 	
+	private void setupClerkMenu(JMenuBar mb) {
+		clrk = new JMenu("Clerk");
+		
+		clrk.setMnemonic(KeyEvent.VK_L);
+		
+		createMenuItem(clrk, "Process Store Purchase...", KeyEvent.VK_O,
+				"Checkout");
+		
+		createMenuItem(clrk, "Process Return...", KeyEvent.VK_R,
+				"Return");
+		
+		mb.add(clrk);
+	}
+	
+	private void setupManagerMenu(JMenuBar mb) {
+		manage = new JMenu("Manager");
+		
+		manage.setMnemonic(KeyEvent.VK_M);
+		
+		createMenuItem(manage, "Process Shipment...", KeyEvent.VK_S,
+				"Shipment");
+		
+		createMenuItem(manage, "Process Delivery...", KeyEvent.VK_D,
+				"Delivery");
+		
+		createMenuItem(manage, "Generate Daily Sales Report...", KeyEvent.VK_G,
+				"Sales");
+		
+		createMenuItem(manage, "Get Top Selling Items...", KeyEvent.VK_T,
+				"Top Selling");
+		
+		mb.add(manage);
+	}
 	/*
 	 * Adds menu items to the Customer menu and then adds the menu to the
 	 * menubar
