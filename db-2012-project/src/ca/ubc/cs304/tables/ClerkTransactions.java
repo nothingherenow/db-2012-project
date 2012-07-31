@@ -30,31 +30,74 @@ public class ClerkTransactions {
 	}
 	
 	/*
-	 * Execute all parts of a purchase transaction. 
+	 * Creates new purchase record corresponding to an instore purchase. Returns the receipt number if successful,
+	 * returns 0 if unsuccessful.
 	 */
-	public void instorePurchase(String cardno, Date cexpire){
+	public int instorePurchase(){
 		try
 		{
-			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null, ?, ?, null, null ");
-			
-			if (cardno != null) {
-				ps.setString(1, cardno);
-			} else {
-				ps.setString(1, null);
-			}
-			
-			if (cexpire != null) {
-				ps.setDate(2, (java.sql.Date) cexpire);
-			} else {
-				ps.setDate(2, null);
-			}			
+			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null" +
+		", null, null, null, null");
+		
 			ps.executeUpdate();
+		
+			ps = con.prepareStatement("SELECT last_number from user_sequences where sequence_name = \'RECEIPT_COUNTER\'");
 			
-			//while loop for 
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int receiptid = rs.getInt(1);
+			
+			con.commit();
+			
+			return receiptid;
+					
 		}
 		catch (SQLException ex)
 		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return 0; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+	
+	public int updateCreditCard(Integer rid, String cardno, Date cexpire) {
+		try {
+			ps = con.prepareStatement("UPDATE Purchase SET cardno = ?, expire = ? WHERE receiptID = ?");
+			ps.setString(1, cardno);
+			ps.setDate(2, (java.sql.Date) cexpire);
+			ps.setInt(3, rid);
+			ps.executeUpdate();
 			
+			con.commit();
+			return 1;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return 0; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
 		}
 	}
 	
@@ -155,7 +198,10 @@ public class ClerkTransactions {
 		}
 	}
 	
-	
+	/*
+	 * Updates the database to reflect an in-store return, given the receipt number, UPC of the item to be returned,
+	 * and the quantity of that item to be returned. Method returns a 1 if successful, 0 if unable to complete process.
+	 */
 	public int processReturn(Integer rid, Integer upc, Integer quantity){
 		try
 		{
@@ -179,13 +225,13 @@ public class ClerkTransactions {
 			try
 			{
 				con.rollback();
-				return -1; 
+				return 0; 
 			}
 			catch (SQLException ex2)
 			{
 				event = new ExceptionEvent(this, ex2.getMessage());
 				fireExceptionGenerated(event);
-				return -1; 
+				return 0; 
 			}
 		}		
 	}
