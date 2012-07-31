@@ -8,6 +8,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import ca.ubc.cs304.tables.ClerkController;
 import ca.ubc.cs304.tables.CustomerController;
 import ca.ubc.cs304.tables.HasSongController;
 import ca.ubc.cs304.tables.ItemController;
@@ -44,13 +45,13 @@ public class MvbView extends JFrame {
 
 	// The top level admin menu
 	private JMenu admin;
-	
+
 	// the top level customer menu
 	private JMenu cust;
 	private JMenuItem custAddItem;
 	private JMenu clrk;
 	private JMenu manage;
-	
+
 	// the admin menus
 	private JMenu custAdmin;
 	private JMenu itemAdmin;
@@ -124,7 +125,7 @@ public class MvbView extends JFrame {
 
 	private void setupAdmins(JMenuBar mb) {
 		admin = new JMenu("Admin");
-		
+
 		admin.setMnemonic(KeyEvent.VK_A);
 		mb.add(admin);
 		setupCustAdminMenu(admin);
@@ -141,59 +142,57 @@ public class MvbView extends JFrame {
 
 	private void setupCustomerMenu(JMenuBar mb) {
 		cust = new JMenu("Customer");
-		
+
 		cust.setMnemonic(KeyEvent.VK_C);
-		
-		createMenuItem(cust, "Search for item...", KeyEvent.VK_S,
-				"Item Search");
-		custAddItem = createMenuItem(cust, "Add selected item to shopping cart...", KeyEvent.VK_A,
+
+		createMenuItem(cust, "Search for item...", KeyEvent.VK_S, "Item Search");
+		custAddItem = createMenuItem(cust,
+				"Add selected item to shopping cart...", KeyEvent.VK_A,
 				"Item Add");
 		custAddItem.setEnabled(false);
 		createMenuItem(cust, "Show shopping cart...", KeyEvent.VK_C,
 				"Show Cart");
-		
+
 		createMenuItem(cust, "Checkout shopping cart...", KeyEvent.VK_O,
 				"Checkout");
-		
+
 		createMenuItem(cust, "Clear shopping cart...", KeyEvent.VK_L,
 				"Clear Cart");
-		
+
 		mb.add(cust);
 	}
-	
+
 	private void setupClerkMenu(JMenuBar mb) {
 		clrk = new JMenu("Clerk");
-		
+
 		clrk.setMnemonic(KeyEvent.VK_L);
-		
+
 		createMenuItem(clrk, "Process Store Purchase...", KeyEvent.VK_O,
-				"Checkout");
-		
-		createMenuItem(clrk, "Process Return...", KeyEvent.VK_R,
-				"Return");
-		
+				"Checkout Store");
+
+		createMenuItem(clrk, "Process Return...", KeyEvent.VK_R, "Return");
+
 		mb.add(clrk);
 	}
-	
+
 	private void setupManagerMenu(JMenuBar mb) {
 		manage = new JMenu("Manager");
-		
+
 		manage.setMnemonic(KeyEvent.VK_M);
-		
-		createMenuItem(manage, "Process Shipment...", KeyEvent.VK_S,
-				"Shipment");
-		
-		createMenuItem(manage, "Process Delivery...", KeyEvent.VK_D,
-				"Delivery");
-		
+
+		createMenuItem(manage, "Process Shipment...", KeyEvent.VK_S, "Shipment");
+
+		createMenuItem(manage, "Process Delivery...", KeyEvent.VK_D, "Delivery");
+
 		createMenuItem(manage, "Generate Daily Sales Report...", KeyEvent.VK_G,
 				"Sales");
-		
+
 		createMenuItem(manage, "Get Top Selling Items...", KeyEvent.VK_T,
 				"Top Selling");
-		
+
 		mb.add(manage);
 	}
+
 	/*
 	 * Adds menu items to the Customer menu and then adds the menu to the
 	 * menubar
@@ -209,7 +208,7 @@ public class MvbView extends JFrame {
 
 		createMenuItem(custAdmin, "Update Customer...", KeyEvent.VK_U,
 				"Update Customer");
-		
+
 		createMenuItem(custAdmin, "Delete Customer...", KeyEvent.VK_D,
 				"Delete Customer");
 
@@ -221,13 +220,12 @@ public class MvbView extends JFrame {
 
 		createMenuItem(custAdmin, "Edit All Customers", KeyEvent.VK_E,
 				"Edit Customer");
-		
+
 		admin.add(custAdmin);
 	}
 
 	/*
-	 * Adds menu items to the HasSong menu and then adds the menu to the
-	 * menubar
+	 * Adds menu items to the HasSong menu and then adds the menu to the menubar
 	 */
 	private void setupHasSongAdminMenu(JMenu admin) {
 		hasSongAdmin = new JMenu("HasSong Admin");
@@ -237,7 +235,7 @@ public class MvbView extends JFrame {
 
 		createMenuItem(hasSongAdmin, "Insert HasSong...", KeyEvent.VK_I,
 				"Insert HasSong");
-		
+
 		createMenuItem(hasSongAdmin, "Delete HasSong...", KeyEvent.VK_D,
 				"Delete HasSong");
 
@@ -249,13 +247,12 @@ public class MvbView extends JFrame {
 
 		createMenuItem(hasSongAdmin, "Edit All HasSongs", KeyEvent.VK_E,
 				"Edit HasSong");
-		
+
 		admin.add(hasSongAdmin);
 	}
-	
+
 	/*
-	 * Adds menu items to the Item menu and then adds the menu to the
-	 * menubar
+	 * Adds menu items to the Item menu and then adds the menu to the menubar
 	 */
 	private void setupItemAdminMenu(JMenu admin) {
 		itemAdmin = new JMenu("Item Admin");
@@ -268,7 +265,7 @@ public class MvbView extends JFrame {
 
 		createMenuItem(itemAdmin, "Update Item...", KeyEvent.VK_U,
 				"Update Item");
-		
+
 		createMenuItem(itemAdmin, "Delete Item...", KeyEvent.VK_D,
 				"Delete Item");
 
@@ -278,12 +275,11 @@ public class MvbView extends JFrame {
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
 				ActionEvent.CTRL_MASK));
 
-		createMenuItem(itemAdmin, "Edit All Items", KeyEvent.VK_E,
-				"Edit Item");
-		
+		createMenuItem(itemAdmin, "Edit All Items", KeyEvent.VK_E, "Edit Item");
+
 		admin.add(itemAdmin);
 	}
-	
+
 	/*
 	 * Adds menu items to the LeadSinger menu and then adds the menu to the
 	 * menubar
@@ -300,18 +296,18 @@ public class MvbView extends JFrame {
 		createMenuItem(leadSingerAdmin, "Delete LeadSinger...", KeyEvent.VK_D,
 				"Delete LeadSinger");
 
-		JMenuItem menuItem = createMenuItem(leadSingerAdmin, "Show All LeadSingers",
-				KeyEvent.VK_S, "Show LeadSinger");
+		JMenuItem menuItem = createMenuItem(leadSingerAdmin,
+				"Show All LeadSingers", KeyEvent.VK_S, "Show LeadSinger");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
 				ActionEvent.CTRL_MASK));
 
 		createMenuItem(leadSingerAdmin, "Edit All LeadSingers", KeyEvent.VK_E,
 				"Edit LeadSinger");
-		
+
 		admin.add(leadSingerAdmin);
 	}
-	
+
 	/*
 	 * Adds menu items to the PurchaseItem menu and then adds the menu to the
 	 * menubar
@@ -322,27 +318,26 @@ public class MvbView extends JFrame {
 		// when u is pressed on the keyboard, the menu will appear
 		purchaseItemAdmin.setMnemonic(KeyEvent.VK_U);
 
-		createMenuItem(purchaseItemAdmin, "Insert PurchaseItem...", KeyEvent.VK_I,
-				"Insert PurchaseItem");
-		
-		createMenuItem(purchaseItemAdmin, "Update PurchaseItem...", KeyEvent.VK_U,
-				"Update PurchaseItem");
+		createMenuItem(purchaseItemAdmin, "Insert PurchaseItem...",
+				KeyEvent.VK_I, "Insert PurchaseItem");
 
-		createMenuItem(purchaseItemAdmin, "Delete PurchaseItem...", KeyEvent.VK_D,
-				"Delete PurchaseItem");
+		createMenuItem(purchaseItemAdmin, "Update PurchaseItem...",
+				KeyEvent.VK_U, "Update PurchaseItem");
 
-		JMenuItem menuItem = createMenuItem(purchaseItemAdmin, "Show All PurchaseItems",
-				KeyEvent.VK_S, "Show PurchaseItem");
+		createMenuItem(purchaseItemAdmin, "Delete PurchaseItem...",
+				KeyEvent.VK_D, "Delete PurchaseItem");
+
+		JMenuItem menuItem = createMenuItem(purchaseItemAdmin,
+				"Show All PurchaseItems", KeyEvent.VK_S, "Show PurchaseItem");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,
 				ActionEvent.CTRL_MASK));
 
-		createMenuItem(purchaseItemAdmin, "Edit All PurchaseItems", KeyEvent.VK_E,
-				"Edit PurchaseItem");
-		
+		createMenuItem(purchaseItemAdmin, "Edit All PurchaseItems",
+				KeyEvent.VK_E, "Edit PurchaseItem");
+
 		admin.add(purchaseItemAdmin);
 	}
-	
 
 	/*
 	 * Adds menu items to the Purchase menu and then adds the menu to the
@@ -359,22 +354,22 @@ public class MvbView extends JFrame {
 
 		createMenuItem(purchaseAdmin, "Update Purchase...", KeyEvent.VK_U,
 				"Update Purchase");
-		
+
 		createMenuItem(purchaseAdmin, "Delete Purchase...", KeyEvent.VK_D,
 				"Delete Purchase");
 
-		JMenuItem menuItem = createMenuItem(purchaseAdmin, "Show All Purchases",
-				KeyEvent.VK_S, "Show Purchase");
+		JMenuItem menuItem = createMenuItem(purchaseAdmin,
+				"Show All Purchases", KeyEvent.VK_S, "Show Purchase");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
 				ActionEvent.CTRL_MASK));
 
 		createMenuItem(purchaseAdmin, "Edit All Purchases", KeyEvent.VK_E,
 				"Edit Purchase");
-		
+
 		admin.add(purchaseAdmin);
 	}
-	
+
 	/*
 	 * Adds menu items to the ReturnItem menu and then adds the menu to the
 	 * menubar
@@ -390,25 +385,24 @@ public class MvbView extends JFrame {
 
 		createMenuItem(returnItemAdmin, "Update ReturnItem...", KeyEvent.VK_U,
 				"Update ReturnItem");
-		
+
 		createMenuItem(returnItemAdmin, "Delete ReturnItem...", KeyEvent.VK_D,
 				"Delete ReturnItem");
 
-		JMenuItem menuItem = createMenuItem(returnItemAdmin, "Show All ReturnItems",
-				KeyEvent.VK_S, "Show ReturnItem");
+		JMenuItem menuItem = createMenuItem(returnItemAdmin,
+				"Show All ReturnItems", KeyEvent.VK_S, "Show ReturnItem");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
 				ActionEvent.CTRL_MASK));
 
 		createMenuItem(returnItemAdmin, "Edit All ReturnItems", KeyEvent.VK_E,
 				"Edit ReturnItem");
-		
+
 		admin.add(returnItemAdmin);
 	}
-	
+
 	/*
-	 * Adds menu items to the Return menu and then adds the menu to the
-	 * menubar
+	 * Adds menu items to the Return menu and then adds the menu to the menubar
 	 */
 	private void setupReturnAdminMenu(JMenu admin) {
 		returnAdmin = new JMenu("Return Admin");
@@ -421,7 +415,7 @@ public class MvbView extends JFrame {
 
 		createMenuItem(returnAdmin, "Update Return...", KeyEvent.VK_U,
 				"Update Return");
-		
+
 		createMenuItem(returnAdmin, "Delete Return...", KeyEvent.VK_D,
 				"Delete Return");
 
@@ -433,7 +427,7 @@ public class MvbView extends JFrame {
 
 		admin.add(returnAdmin);
 	}
-	
+
 	/*
 	 * Adds menu items to the ShipItem menu and then adds the menu to the
 	 * menubar
@@ -449,22 +443,22 @@ public class MvbView extends JFrame {
 
 		createMenuItem(shipItemAdmin, "Update ShipItem...", KeyEvent.VK_U,
 				"Update ShipItem");
-		
+
 		createMenuItem(shipItemAdmin, "Delete ShipItem...", KeyEvent.VK_D,
 				"Delete ShipItem");
 
-		JMenuItem menuItem = createMenuItem(shipItemAdmin, "Show All ShipItems",
-				KeyEvent.VK_S, "Show ShipItem");
+		JMenuItem menuItem = createMenuItem(shipItemAdmin,
+				"Show All ShipItems", KeyEvent.VK_S, "Show ShipItem");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
 				ActionEvent.CTRL_MASK));
 
 		createMenuItem(shipItemAdmin, "Edit All ShipItems", KeyEvent.VK_E,
 				"Edit ShipItem");
-		
+
 		admin.add(shipItemAdmin);
 	}
-	
+
 	/*
 	 * Adds menu items to the Shipment menu and then adds the menu to the
 	 * menubar
@@ -480,19 +474,19 @@ public class MvbView extends JFrame {
 
 		createMenuItem(shipmentAdmin, "Update Shipment...", KeyEvent.VK_U,
 				"Update Shipment");
-		
+
 		createMenuItem(shipmentAdmin, "Delete Shipment...", KeyEvent.VK_D,
 				"Delete Shipment");
 
-		JMenuItem menuItem = createMenuItem(shipmentAdmin, "Show All Shipments",
-				KeyEvent.VK_S, "Show Shipment");
+		JMenuItem menuItem = createMenuItem(shipmentAdmin,
+				"Show All Shipments", KeyEvent.VK_S, "Show Shipment");
 		// setup a short cut key for this menu item
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				ActionEvent.CTRL_MASK));
 
 		createMenuItem(shipmentAdmin, "Edit All Shipments", KeyEvent.VK_E,
 				"Edit Shipments");
-		
+
 		admin.add(shipmentAdmin);
 	}
 
@@ -554,20 +548,21 @@ public class MvbView extends JFrame {
 	}
 
 	/*
-	 * This method adds the given JTable into tableScrPane, also allowing customer to checkout items
+	 * This method adds the given JTable into tableScrPane, also allowing
+	 * customer to checkout items
 	 */
 	public void addShoppingTable(JTable data) {
 		tableScrPane.setViewportView(data);
 		custAddItem.setEnabled(true);
 	}
-	
+
 	/*
 	 * This method registers the controllers for all items in each menu. This
 	 * method should only be executed once.
 	 */
 	public void registerControllers() {
 		JMenuItem menuItem;
-		
+
 		// Register all controllers
 		CustomerController cc = new CustomerController(this);
 
@@ -575,76 +570,93 @@ public class MvbView extends JFrame {
 			menuItem = custAdmin.getItem(i);
 			menuItem.addActionListener(cc);
 		}
-		
+
 		ShipmentController sc = new ShipmentController(this);
-		
+
 		for (int i = 0; i < shipmentAdmin.getItemCount(); i++) {
 			menuItem = shipmentAdmin.getItem(i);
 			menuItem.addActionListener(sc);
 		}
-		
+
 		HasSongController hsc = new HasSongController(this);
-		
+
 		for (int i = 0; i < hasSongAdmin.getItemCount(); i++) {
 			menuItem = hasSongAdmin.getItem(i);
 			menuItem.addActionListener(hsc);
 		}
-		
+
 		ItemController ic = new ItemController(this);
-		
+
 		for (int i = 0; i < itemAdmin.getItemCount(); i++) {
 			menuItem = itemAdmin.getItem(i);
 			menuItem.addActionListener(ic);
 		}
-		
+
 		LeadSingerController lsc = new LeadSingerController(this);
-		
+
 		for (int i = 0; i < leadSingerAdmin.getItemCount(); i++) {
 			menuItem = leadSingerAdmin.getItem(i);
 			menuItem.addActionListener(lsc);
 		}
-		
+
 		PurchaseItemController pic = new PurchaseItemController(this);
-		
+
 		for (int i = 0; i < purchaseItemAdmin.getItemCount(); i++) {
 			menuItem = purchaseItemAdmin.getItem(i);
 			menuItem.addActionListener(pic);
 		}
-		
+
 		PurchaseController pc = new PurchaseController(this);
-		
+
 		for (int i = 0; i < purchaseAdmin.getItemCount(); i++) {
 			menuItem = purchaseAdmin.getItem(i);
 			menuItem.addActionListener(pc);
 		}
-		
+
 		ReturnItemController ric = new ReturnItemController(this);
-		
+
 		for (int i = 0; i < returnItemAdmin.getItemCount(); i++) {
 			menuItem = returnItemAdmin.getItem(i);
 			menuItem.addActionListener(ric);
 		}
-		
+
 		ReturnController rc = new ReturnController(this);
-		
+
 		for (int i = 0; i < returnAdmin.getItemCount(); i++) {
 			menuItem = returnAdmin.getItem(i);
 			menuItem.addActionListener(rc);
 		}
-		
+
 		ShipItemController sic = new ShipItemController(this);
-		
+
 		for (int i = 0; i < shipItemAdmin.getItemCount(); i++) {
 			menuItem = shipItemAdmin.getItem(i);
 			menuItem.addActionListener(sic);
 		}
-		
+
 		ShopController shc = new ShopController(this);
-		
+
 		for (int i = 0; i < cust.getItemCount(); i++) {
 			menuItem = cust.getItem(i);
 			menuItem.addActionListener(shc);
 		}
+
+		ClerkController clkc = new ClerkController(this);
+
+		for (int i = 0; i < clrk.getItemCount(); i++) {
+			menuItem = clrk.getItem(i);
+			menuItem.addActionListener(clkc);
+		}
+		
+		/* For Later use with implemented manager transactions
+		ManagerController manc = new ManagerController(this);
+
+		for (int i = 0; i < manage.getItemCount(); i++) {
+			menuItem = manage.getItem(i);
+			menuItem.addActionListener(manc);
+		}
+		*/
+
 	}
 
 	public static void main(String[] args) {
