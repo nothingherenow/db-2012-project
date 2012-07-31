@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import ca.ubc.cs304.main.CustomTable;
 import ca.ubc.cs304.main.CustomTableModel;
@@ -143,16 +145,28 @@ public class ShopController implements ActionListener, ExceptionListener
 		// the result set is updatable, it will update the database
 		// when the table's data is modified.  
 		CustomTableModel model = new CustomTableModel(shop.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
+		final CustomTable data = new CustomTable(model);
 		table = data;
 
 		// register to be notified of any exceptions that occur in the model and table
 		model.addExceptionListener(this);
 		data.addExceptionListener(this);
+		
+		data.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		data.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!data.getSelectionModel().isSelectionEmpty()) {
+					mvb.enableAddItem();
+				}
+				
+			}
+		});
 
 		// Adds the table to the scrollpane.
 		// By default, a JTable does not have scroll bars.
-		mvb.addShoppingTable(data);
+		mvb.addTable(data);
 	}
 
 	/*
