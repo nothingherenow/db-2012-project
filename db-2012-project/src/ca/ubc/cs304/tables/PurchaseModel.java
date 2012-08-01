@@ -159,7 +159,7 @@ public class PurchaseModel {
 	 */
 	public boolean deletePurchase(Integer prid) {
 		try {
-			ps = con.prepareStatement("DELETE FROM purchase WHERE receipt_id = ?");
+			ps = con.prepareStatement("DELETE FROM purchase WHERE receiptid = ?");
 
 			ps.setInt(1, prid.intValue());
 

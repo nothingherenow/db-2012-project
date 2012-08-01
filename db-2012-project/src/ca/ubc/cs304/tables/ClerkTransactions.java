@@ -66,6 +66,7 @@ public class ClerkTransactions {
 		{
 			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null," +
 		" null, null, null, null");
+
 		
 			ps.executeUpdate();
 		

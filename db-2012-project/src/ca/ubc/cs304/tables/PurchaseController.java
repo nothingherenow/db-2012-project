@@ -835,7 +835,7 @@ public class PurchaseController implements ActionListener, ExceptionListener
 	    inputPane.setLayout(gb);
 
 	    // create and place receipt id label
-	    JLabel label= new JLabel("UPC: ", SwingConstants.RIGHT);	    
+	    JLabel label= new JLabel("Receipt ID: ", SwingConstants.RIGHT);	    
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(0, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;

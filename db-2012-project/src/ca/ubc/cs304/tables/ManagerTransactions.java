@@ -238,6 +238,27 @@ public ResultSet processShipment(int sid)
 		}
 
 	/*
+	 * Returns an non-updatable result set for Shipment
+	 */
+	public ResultSet showShipment() {
+		try {
+			ps = con.prepareStatement("SELECT s.* FROM shipment s",
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs;
+		} catch (SQLException ex) {
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null;
+		}
+	}
+	
+	/*
  	* Returns the database connection used by this customer model
  	*/
 	public Connection getConnection()
@@ -307,4 +328,3 @@ public ResultSet processShipment(int sid)
 	
 
 	
-
