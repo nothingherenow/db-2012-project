@@ -25,6 +25,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	private ClerkTransactions clerk = null;
 	private Integer rid = null;
 	private BigDecimal cost = null;
+	private PurchaseItemModel item = null;
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -289,16 +290,23 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				mvb.updateStatusBar("Adding Item to Bill...");
 
 				if (rid == 0) {
-					mvb.updateStatusBar("Unable to Add");
+					mvb.updateStatusBar("Unable to generate receipt id");
 					return OPERATIONFAILED;
+				}
+				
+				else{
+					if(item.insertPurchaseItem(rid, iupc, iquant) != true){
+						mvb.updateStatusBar("Unable to insert item");
+						return OPERATIONFAILED;
+					}
 				}
 
 				mvb.updateStatusBar("Add to bill complete.");
 
 				// Shows the entered items in a table
 
-				showAdded(iupc); // Shows the entered items in a table
-
+				showAdded(iupc); 
+				
 				return OPERATIONSUCCESS;
 
 			} catch (NumberFormatException ex) {
