@@ -14,7 +14,10 @@ import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
 import ca.ubc.cs304.main.MvbView;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.sql.Date;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -22,7 +25,10 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 	private MvbView mvb;
 	private ClerkTransactions clerk = null;
-	private PurchaseModel purch = null;
+	private PurchaseItemModel purchit = null;
+	// arraylist to temporarily store instore purchases
+	// each item takes 2 spaces in the array, one for upc and one for quantity
+	private ArrayList tempitems = null; 
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -32,8 +38,8 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	public ClerkController(MvbView mvb) {
 		this.mvb = mvb;
 		clerk = new ClerkTransactions();
-		purch = new PurchaseModel();
-
+		purchit = new PurchaseItemModel();
+		tempitems = new ArrayList(50);  //default size, every instore purchase can have maximum 25 items
 		// register to receive exception events from customer
 		clerk.addExceptionListener(this);
 	}
@@ -80,11 +86,36 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	}
 
 	/*
-	 * This method displays the customer's shopping cart in a non-editable
+	 * This method displays the most recent item added to a purchase in a non-editable
 	 * JTable
 	 */
 	private void showAdded(Integer iupc) {
 		ResultSet rs = clerk.showItem(iupc); 
+		// show all the items lined up to be purchased
+
+		//CustomTableModel maintains the result set's data, e.g., if
+		// the result set is updatable, it will update the database
+		// when the table's data is modified.
+		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		// register to be notified of any exceptions that occur in the model and
+		// table
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		// Adds the table to the scrollpane.
+		// By default, a JTable does not have scroll bars.
+		mvb.addTable(data);
+	}
+	
+	
+	/*
+	 * This method displays a portion of the receipt in a non-editable
+	 * JTable, specifically the list of items, their prices and quantities purchased.
+	 */
+	private void receiptlist(Integer rid) {
+		ResultSet rs = clerk.receiptItems(rid); 
 		// show all the items lined up to be purchased
 
 		//CustomTableModel maintains the result set's data, e.g., if
@@ -264,11 +295,12 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				}
 
 				mvb.updateStatusBar("Adding Item to Bill...");
+				tempitems.add(iupc);
+				tempitems.add(iquant);
 				
-
 				mvb.updateStatusBar("Add to bill complete.");
 
-				showAdded(iupc); // Shows the entered items in a table
+				showAdded(iupc); // Shows the entered item in a table
 
 				return OPERATIONSUCCESS;
 
@@ -290,17 +322,44 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 				mvb.updateStatusBar("Checking out Items...");
 
-				// Verify Payment, Sum item prices(maybe) etc methods go here
+				//create a new purchase, and obtain that purchase's receiptID
+				Integer recid = clerk.instorePurchase();
+				if (recid == 0){
+					return OPERATIONFAILED;
+				}
+				int i;
+				for (i = 0; i < tempitems.size(); i+=2) {
+					purchit.insertPurchaseItem(recid, (Integer) tempitems.get(i), (Integer) tempitems.get(i+1));
+				}
 
 				mvb.updateStatusBar("Checkout complete.");
 
-				// print receipt method goes here
-
+				//formatting to print receiptID and date of purchase in status bar
+				ResultSet rdate = clerk.receiptDate(recid);
+				rdate.next();
+				Date recdate = rdate.getDate(1);
+				SimpleDateFormat rdformat = new SimpleDateFormat("DD-MM-YYYY");
+				String strdate = rdformat.format(recdate);
+				mvb.updateStatusBar("Receipt# : " + recid.toString() + " Date: " + strdate);
+				
+				//output table with list of items purchased and relevant information
+				receiptlist(recid);
+				
+				//formatting to print total in status bar
+				BigDecimal ptotal = clerk.receiptTotal(recid);
+				mvb.updateStatusBar("Purchase Total: " + ptotal.toString());
+				
+				//delete everything in the temporary array
+				tempitems.clear();
+				
 				return OPERATIONSUCCESS;
 
 			} catch (NumberFormatException ex) {
 				// this exception is thrown when a string
 				// cannot be converted to a number
+				return VALIDATIONERROR;
+			} catch (SQLException ex) {
+				
 				return VALIDATIONERROR;
 			}
 		}
