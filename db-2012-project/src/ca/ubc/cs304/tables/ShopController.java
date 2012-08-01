@@ -602,7 +602,7 @@ public class ShopController implements ActionListener, ExceptionListener
 				mvb.updateStatusBar("Adding item to shopping cart...");
 
 				if(quantity <= stock){
-					if(shop.claimItems(upc, quantity)) {
+					if(shop.checkItems(upc, quantity)) {
 						mvb.updateStatusBar("Item added to shopping cart.");
 						showShoppingCart();
 						return OPERATIONSUCCESS;
@@ -614,7 +614,7 @@ public class ShopController implements ActionListener, ExceptionListener
 					int result = JOptionPane.showConfirmDialog(this, "Not enough stock! Buy " + stock + " instead?" ,
 							"Not enough stock!", JOptionPane.YES_NO_OPTION);
 					if(result == JOptionPane.YES_OPTION) {
-						if(shop.claimItems(upc, stock)) {
+						if(shop.checkItems(upc, stock)) {
 							mvb.updateStatusBar("Item added to shopping cart.");
 							showShoppingCart();
 							return OPERATIONSUCCESS;

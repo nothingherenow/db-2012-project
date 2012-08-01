@@ -91,7 +91,7 @@ public class ShopTransactions {
 		}
 	}
 
-	public boolean claimItems(int upc, int quantity) {
+	public boolean checkItems(int upc, int quantity) {
 		String login = LoginWindow.getLogin();
 
 		try
@@ -104,14 +104,6 @@ public class ShopTransactions {
 			ps.setInt(2, upc);
 
 			ps.setInt(3, quantity);
-
-			ps.executeUpdate();
-
-			ps = con.prepareStatement("UPDATE Item SET stock = (stock - ?) WHERE upc = ?");
-
-			ps.setInt(1, quantity);
-
-			ps.setInt(2, upc);
 
 			ps.executeUpdate();
 
@@ -320,6 +312,20 @@ public class ShopTransactions {
 					"WHERE s.cid = ?");
 
 			ps.setString(1, login);
+
+			ps.executeUpdate();
+			
+			ps = con.prepareStatement(
+					"UPDATE Item I " +
+							"SET stock = (SELECT stock - quantity " +
+							"FROM Shoppingcart " +
+							"WHERE Shoppingcart.upc = I.upc " +
+							"AND Shoppingcart.cid = ?) " +
+					"WHERE EXISTS (SELECT s.upc FROM Shoppingcart s WHERE I.upc = s.upc AND s.cid = ?)");
+
+			ps.setString(1, login);
+
+			ps.setString(2, login);
 
 			ps.executeUpdate();
 
