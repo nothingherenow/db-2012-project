@@ -12,6 +12,7 @@ import ca.ubc.cs304.main.CustomTable;
 import ca.ubc.cs304.main.CustomTableModel;
 import ca.ubc.cs304.main.ExceptionEvent;
 import ca.ubc.cs304.main.ExceptionListener;
+import ca.ubc.cs304.main.LoginWindow;
 import ca.ubc.cs304.main.MvbView;
 import ca.ubc.cs304.tables.ClerkController.CheckoutStoreDialog;
 import ca.ubc.cs304.tables.ClerkController.ReturnDialog;
@@ -22,7 +23,7 @@ import java.text.SimpleDateFormat;
 
 public class ManagerController implements ActionListener, ExceptionListener {
 	private MvbView mvb;
-	// private ManagerTransactions manage = null;
+	private ManagerTransactions manage = null;
 	private JTable table = null;
 	private ResultSet rs = null;
 
@@ -33,10 +34,10 @@ public class ManagerController implements ActionListener, ExceptionListener {
 
 	public ManagerController(MvbView mvb) {
 		this.mvb = mvb;
-		// manage = new ManagerTransactions();
+		manage = new ManagerTransactions();
 
-		// register to receive exception events from manager
-		// manage.addExceptionListener(this);
+		//register to receive exception events from manager
+		manage.addExceptionListener(this);
 	}
 	
 	/*
@@ -44,24 +45,33 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
-
+		
 		/*
-		if (actionCommand.equals("Shipment")) {
-			ShipmentDialog iDialog = new ShipmentDialog(mvb);
+		if (actionCommand.equals("Process Shipment"))
+		{
+			ProcessShipmentDialog iDialog = new ProcessShipmentDialog(mvb);
 			iDialog.pack();
 			mvb.centerWindow(iDialog);
 			iDialog.setVisible(true);
 			return;
 		}
-
-		if (actionCommand.equals("Delivery")) {
-			DeliveryDialog iDialog = new DeliveryDialog(mvb);
+		
+		if (actionCommand.equals("Set Delivery"))
+		{
+			SetDeliveredDialog iDialog = new SetDeliveredDialog(mvb);
 			iDialog.pack();
 			mvb.centerWindow(iDialog);
 			iDialog.setVisible(true);
 			return;
 		}
 		*/
+		
+		if (actionCommand.equals("Show Shipments"))
+		{
+			mvb.updateStatusBar("Showing Shipments...");
+			showAllShipments();
+			return; 
+		}
 		
 		if (actionCommand.equals("Sales"))
 		{
@@ -117,6 +127,28 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	// SQL transaction method from ManagerTransactions goes here
 	}
 	
+	/*
+	 * Returns an non-updatable result set for Shipment
+	 */
+	 private void showAllShipments()
+	    {
+		ResultSet rs = manage.showShipment();
+		
+		// CustomTableModel maintains the result set's data, e.g., if  
+		// the result set is updatable, it will update the database
+		// when the table's data is modified.  
+		CustomTableModel model = new CustomTableModel(manage.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		// register to be notified of any exceptions that occur in the model and table
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+		    
+		// Adds the table to the scrollpane.
+		// By default, a JTable does not have scroll bars.
+		mvb.addTable(data);
+	    }
+	 
 	
 
 }

@@ -183,9 +183,11 @@ public class MvbView extends JFrame {
 
 		manage.setMnemonic(KeyEvent.VK_M);
 
-		createMenuItem(manage, "Process Shipment...", KeyEvent.VK_S, "Shipment");
-
-		createMenuItem(manage, "Process Delivery...", KeyEvent.VK_D, "Delivery");
+		createMenuItem(manage, "Show All Shipments...", KeyEvent.VK_S, "Show Shipments");
+		
+		createMenuItem(manage, "Process Shipment...", KeyEvent.VK_P, "Process Shipment");
+		
+		createMenuItem(manage, "Set Delivery Date...", KeyEvent.VK_D, "Set Delivery");
 
 		createMenuItem(manage, "Generate Daily Sales Report...", KeyEvent.VK_G,
 				"Sales");
