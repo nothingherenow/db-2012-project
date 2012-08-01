@@ -298,7 +298,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 
 				
 				
-				else{
+				else {
 					if(item.insertPurchaseItem(rid, iupc, iquant) != true){
 						mvb.updateStatusBar("Unable to insert item");
 						return OPERATIONFAILED;
@@ -670,18 +670,30 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				mvb.updateStatusBar("Checking out Items...");
 				// no fields to validate on cash purchase
 				mvb.updateStatusBar("Checkout complete.");
+				
+				//formatting to print receiptID and date of purchase in status bar
+				ResultSet rdate = clerk.receiptDate(rid);
+				rdate.next();
+				Date recdate = rdate.getDate(1);
+				SimpleDateFormat rdformat = new SimpleDateFormat("DD-MM-YYYY");
+				String strdate = rdformat.format(recdate);
+				mvb.updateStatusBar("Receipt# : " + rid.toString() + " Date: " + strdate);
 
 				showItems(); // show items in a table
 				cost = clerk.receiptTotal(rid);
 				mvb.updateStatusBar("Your total cost is: $" + cost);
 
-				rid = null; // clear rid for next ADD process
+				rid = null; // clear rid for next purchase process
+				cost = null; //clear cost for next purchase process
 
 				return OPERATIONSUCCESS;
 
+			// this exception is thrown when a string cannot be converted to an integer	
 			} catch (NumberFormatException ex) {
-				// this exception is thrown when a string
-				// cannot be converted to a number
+				return VALIDATIONERROR;
+			// this exception is thrown when an error occurs in any SQL query when
+			// clerk.receiptDate is called.
+			} catch (SQLException ex) {
 				return VALIDATIONERROR;
 			}
 		}
@@ -724,17 +736,31 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				}
 				
 				mvb.updateStatusBar("Checkout complete.");
+				
+				//formatting to print receiptID and date of purchase in status bar
+				ResultSet rdate = clerk.receiptDate(rid);
+				rdate.next();
+				Date recdate = rdate.getDate(1);
+				SimpleDateFormat rdformat = new SimpleDateFormat("DD-MM-YYYY");
+				String strdate = rdformat.format(recdate);
+				mvb.updateStatusBar("Receipt# : " + rid.toString() + " Date: " + strdate);
 
-				showItems(); // show items in a table
+				showItems(); // show purchased items in a table
+				
+				String lastfive = cardnumber.substring(cardnumber.length() - 6, cardnumber.length() - 1);
+				mvb.updateStatusBar("Credit card# : XXXX XXXX XXXX " + lastfive);
 				cost = clerk.receiptTotal(rid);
-				mvb.updateStatusBar("Your total cost is: $" + cost);
-				rid = null; // clear rid for next ADD process
-
+				mvb.updateStatusBar("Your total cost is: $" + cost.toString());
+				rid = null; // clear rid for next Purchase process
+				cost = null; // clear cost for next Purchase process
 				return OPERATIONSUCCESS;
 
+			// this exception is thrown when a string cannot be converted to a number
 			} catch (NumberFormatException ex) {
-				// this exception is thrown when a string
-				// cannot be converted to a number
+				return VALIDATIONERROR;
+			// this exception is thrown when an error occurs in any SQL query when
+			// clerk.receiptDate is called.
+			} catch (SQLException ex) {
 				return VALIDATIONERROR;
 			}
 		}
