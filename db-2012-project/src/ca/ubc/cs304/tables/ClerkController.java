@@ -83,25 +83,24 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	 * This method displays the customer's shopping cart in a non-editable
 	 * JTable
 	 */
-	private void showBill() {
-		// ResultSet rs = clerk.showPurchaseItem(); show all the items lined up
-		// to be purchased
+	private void showAdded(Integer iupc) {
+		ResultSet rs = clerk.showItem(iupc); 
+		// show all the items lined up to be purchased
 
-		// CustomTableModel maintains the result set's data, e.g., if
+		//CustomTableModel maintains the result set's data, e.g., if
 		// the result set is updatable, it will update the database
 		// when the table's data is modified.
-		// CustomTableModel model = new CustomTableModel(clerk.getConnection(),
-		// rs);
-		// CustomTable data = new CustomTable(model);
+		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
 
 		// register to be notified of any exceptions that occur in the model and
 		// table
-		// model.addExceptionListener(this);
-		// data.addExceptionListener(this);
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
 
 		// Adds the table to the scrollpane.
 		// By default, a JTable does not have scroll bars.
-		// mvb.addTable(data);
+		mvb.addTable(data);
 	}
 
 	// This class creates a dialog box for Checking out items in store.
@@ -167,16 +166,16 @@ public class ClerkController implements ActionListener, ExceptionListener {
 			gb.setConstraints(quant, c);
 			inputPane.add(quant);
 
-			// panel for the OK ADD and cancel buttons
+			// panel for the PURCHASE, ADD and Cancel buttons
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-			JButton OKButton = new JButton("OK");
+			JButton PurchButton = new JButton("PURCHASE");
 			JButton cancelButton = new JButton("Cancel");
 			JButton ADDButton = new JButton("ADD");
-			OKButton.addActionListener(this);
-			OKButton.setActionCommand("OK");
+			PurchButton.addActionListener(this);
+			PurchButton.setActionCommand("PURCHASE");
 			ADDButton.addActionListener(this);
 			ADDButton.setActionCommand("ADD");
 			cancelButton.addActionListener(new ActionListener() {
@@ -188,7 +187,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 			// add the buttons to buttonPane
 			buttonPane.add(Box.createHorizontalGlue());
 			buttonPane.add(ADDButton);
-			buttonPane.add(OKButton);
+			buttonPane.add(PurchButton);
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 			buttonPane.add(cancelButton);
 
@@ -203,12 +202,12 @@ public class ClerkController implements ActionListener, ExceptionListener {
 		}
 
 		/*
-		 * Event handler for the OK and ADD buttons in CheckoutStoreDialog
+		 * Event handler for the PURCHASE and ADD buttons in CheckoutStoreDialog
 		 */
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 
-			if (actionCommand.equals("OK")) {
+			if (actionCommand.equals("PURCHASE")) {
 				if (validateCheckout() != VALIDATIONERROR) {
 					dispose();
 				} else {
@@ -265,13 +264,11 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				}
 
 				mvb.updateStatusBar("Adding Item to Bill...");
-
 				
-				// if add fails: else return OPERATIONFAILED
 
 				mvb.updateStatusBar("Add to bill complete.");
 
-				showBill(); // Shows the entered items in a table
+				showAdded(iupc); // Shows the entered items in a table
 
 				return OPERATIONSUCCESS;
 
