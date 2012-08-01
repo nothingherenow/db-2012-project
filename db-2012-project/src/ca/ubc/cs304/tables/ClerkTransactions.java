@@ -30,6 +30,34 @@ public class ClerkTransactions {
 	}
 	
 	/*
+	public int getReceiptID() {
+		try
+		{
+			ps = con.prepareStatement("");
+			ps.executeQuery();
+			
+		}
+	}
+	*/
+	
+	public ResultSet showItem(Integer itupc){
+		try
+		{
+			ps = con.prepareStatement("SELECT upc, title, category FROM Item i where i.upc = ?");
+			ps.setInt(1, itupc);
+			ResultSet rs = ps.executeQuery();
+			return rs;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			return null;
+		}
+		
+	}
+	
+	/*
 	 * Creates new purchase record corresponding to an instore purchase. Returns the receipt number if successful,
 	 * returns 0 if unsuccessful.
 	 */
@@ -112,7 +140,7 @@ public class ClerkTransactions {
 	public ResultSet receiptItems(Integer rid){
 		try
 		{
-			ps = con.prepareStatement("SELECT p.upc, p.quantity, i.price FROM PurchaseItem p, Item i" +
+			ps = con.prepareStatement("SELECT p.upc, p.quantity, i.price FROM PurchaseItem p, Item i " +
 					"WHERE p.upc = i.upc AND p.receiptID = ?");
 			
 			ps.setInt(1, rid);
@@ -172,7 +200,7 @@ public class ClerkTransactions {
 					ResultSet.FETCH_UNKNOWN);
 			ps.setInt(1,  rid);
 			ResultSet rs = ps.executeQuery();
-			rs.beforeFirst();
+			//rs.beforeFirst();
 			
 			if(rs.next() == false){
 				ExceptionEvent ev = new ExceptionEvent(this, "Invalid receipt");
@@ -210,11 +238,11 @@ public class ClerkTransactions {
 	public int processReturn(Integer rid, Integer upc, Integer quantity){
 		try
 		{
-			ps = con.prepareStatement("INSERT into Return VALUES(return_counter.nextval, sysdate, ?");
+			ps = con.prepareStatement("INSERT into Return VALUES(return_counter.nextval, sysdate, ?)");
 			ps.setInt(1, rid);
 			ps.executeUpdate();
 			
-			ps = con.prepareStatement("INSERT into ReturnItem VALUES(return_counter.currval, ?, ?");
+			ps = con.prepareStatement("INSERT into ReturnItem VALUES(return_counter.currval, ?, ?)");
 			ps.setInt(1, upc);
 			ps.setInt(2,  quantity);
 			ps.executeUpdate();
