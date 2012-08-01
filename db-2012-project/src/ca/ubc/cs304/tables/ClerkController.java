@@ -35,9 +35,11 @@ public class ClerkController implements ActionListener, ExceptionListener {
 	public ClerkController(MvbView mvb) {
 		this.mvb = mvb;
 		clerk = new ClerkTransactions();
+		item = new PurchaseItemModel();
 
 		// register to receive exception events from customer
 		clerk.addExceptionListener(this);
+		item.addExceptionListener(this);
 	}
 
 	/*
