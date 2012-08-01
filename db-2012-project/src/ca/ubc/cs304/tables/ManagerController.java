@@ -260,10 +260,15 @@ public class ManagerController implements ActionListener, ExceptionListener {
 				mvb.updateStatusBar("Generating Daily Sales Report...");
 
 				rs = manage.showDailyReportAllItems(date);
+				showResults(rs);
+				rs = manage.showDailyReportCategorialTotal(date);
+				showResults(rs);
+				rs = manage.showDailyReportTotal(date);
+				showResults(rs);
 
 				mvb.updateStatusBar("Processing complete, tables show reports for all items, per category, and in total in sequential order.");
 
-				showResults(rs);
+				
 
 				return OPERATIONSUCCESS;
 
