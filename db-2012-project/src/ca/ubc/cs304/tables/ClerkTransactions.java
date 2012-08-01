@@ -71,6 +71,11 @@ public class ClerkTransactions {
 		}
 	}
 	
+	/*
+	 * Updates purchase record to include a credit card number and its expiry date, indicating that the
+	 * purchase was made via credit card. Returns 1 if successful and 0 if not.
+	 */
+	
 	public int updateCreditCard(Integer rid, String cardno, Date cexpire) {
 		try {
 			ps = con.prepareStatement("UPDATE Purchase SET cardno = ?, expire = ? WHERE receiptID = ?");
@@ -163,28 +168,28 @@ public class ClerkTransactions {
 	public boolean checkReturn(Integer rid){
 		try 
 		{
-			ps = con.prepareStatement("SELECT * FROM Purchase p WHERE p.receiptID = ?", 
-					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.FETCH_UNKNOWN);
+			ps = con.prepareStatement("SELECT p.receiptID, p.purdate FROM Purchase p WHERE p.receiptID = ?", 
+					ResultSet.FETCH_UNKNOWN);
 			ps.setInt(1,  rid);
 			ResultSet rs = ps.executeQuery();
 			rs.beforeFirst();
 			
-			if(!rs.next()){
+			if(rs.next() == false){
 				ExceptionEvent ev = new ExceptionEvent(this, "Invalid receipt");
 				fireExceptionGenerated(ev);
 				return false;
 			}
 			
-			java.sql.Date sqldate = rs.getDate("retdate");
+			java.sql.Date purchdate = rs.getDate("purdate");
 			GregorianCalendar gCal = new GregorianCalendar();
 			gCal.add(gCal.DATE, -15);
-			java.util.Date jdate = new java.util.Date(gCal.getTime().getTime());
+			java.sql.Date jdate = new java.sql.Date(gCal.getTime().getTime());
 			
-			if (jdate.after(sqldate)) {
+			if (jdate.after(purchdate)) {
 				ExceptionEvent ev = new ExceptionEvent(this, "Invalid return, 15 days have elapsed" + 
 						"since purchase");
 				fireExceptionGenerated(ev);
-			return false;
+				return false;
 			}
 		
 			return true;
