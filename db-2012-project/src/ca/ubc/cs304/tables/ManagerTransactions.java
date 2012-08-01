@@ -39,7 +39,7 @@ public class ManagerTransactions {
     				"WHERE upc IN ( " +
     					"SELECT pi.upc, SUM (pi.quantity) AS NumCopiesSold " + 
     					"FROM purchaseitem pi, purchase p " +
-    					"WHERE p.date = ? AND pi.receiptID = p.receiptID " +
+    					"WHERE p.purDate = ? AND pi.receiptID = p.receiptID " +
     					"GROUP BY pi.upc " +
    						"LIMIT 0, ?) " + 
     				"ORDER BY NumCopiesSold DESC");
@@ -157,10 +157,10 @@ public ResultSet processShipment(int sid)
 	public ResultSet showDailyReportAllItems(Date date){
 		try {
 			ps = con.prepareStatement(
-					"SELECT i.upc, i.category, i.price, SUM(pi.quantity) AS totalUnits, SUM(i.sellPrice) AS totalCost " +
+					"SELECT i.upc, i.category, SUM(pi.quantity) AS totalUnits, SUM(i.sellPrice) AS totalCost " +
 					"FROM Purchase p, PurchaseItem pi, Item i " +
-					"WHERE pi.receiptID = i.receiptID AND pi.upc = i.upc AND p.date = ?" +
-					"GROUP BY pi.upc, i.category");
+					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ?" +
+					"GROUP BY i.upc, i.category");
 			
 			ps.setDate(1, date);
 			
@@ -187,7 +187,7 @@ public ResultSet processShipment(int sid)
 			ps = con.prepareStatement(
 					"SELECT i.category, SUM(pi.quantity) AS totalSaleCategory, SUM(i.sellPrice) AS totalCategoryCost "  +
 					"FROM Purchase p, PurchaseItem pi, Item i " +
-					"WHERE pi.receiptID = i.receiptID AND pi.upc = i.upc AND p.date = ?" +
+					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ?" +
 					"GROUP BY i.category");
 			
 			ps.setDate(1, date);
@@ -215,7 +215,7 @@ public ResultSet processShipment(int sid)
 			ps = con.prepareStatement(
 					"SELECT SUM(pi.quantity) AS totalSalesOverall, SUM(i.sellPrice) AS totalMoneyMade "  +
 					"FROM Purchase p, PurchaseItem pi, Item i " +
-					"WHERE p.receiptID = pi.receiptID AND pi.upc = i.upc AND p.date = ?");
+					"WHERE p.receiptID = pi.receiptID AND pi.upc = i.upc AND p.purDate = ?");
 			
 			ps.setDate(1, date);
 			
