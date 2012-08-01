@@ -159,7 +159,7 @@ public ResultSet processShipment(int sid)
 			ps = con.prepareStatement(
 					"SELECT i.upc, i.category, SUM(pi.quantity) AS totalUnits, SUM(i.sellPrice) AS totalCost " +
 					"FROM Purchase p, PurchaseItem pi, Item i " +
-					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ?" +
+					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ? " +
 					"GROUP BY i.upc, i.category");
 			
 			ps.setDate(1, date);
@@ -187,7 +187,7 @@ public ResultSet processShipment(int sid)
 			ps = con.prepareStatement(
 					"SELECT i.category, SUM(pi.quantity) AS totalSaleCategory, SUM(i.sellPrice) AS totalCategoryCost "  +
 					"FROM Purchase p, PurchaseItem pi, Item i " +
-					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ?" +
+					"WHERE pi.receiptID = p.receiptID AND pi.upc = i.upc AND p.purDate = ? " +
 					"GROUP BY i.category");
 			
 			ps.setDate(1, date);

@@ -27,6 +27,8 @@ public class ManagerController implements ActionListener, ExceptionListener {
 	private MvbView mvb;
 	private ManagerTransactions manage = null;
 	private JTable table = null;
+	private JTable table2 = null;
+	private JTable table3 = null;
 	private ResultSet rs = null;
 
 	// constants used for describing the outcome of an operation
@@ -260,10 +262,14 @@ public class ManagerController implements ActionListener, ExceptionListener {
 				mvb.updateStatusBar("Generating Daily Sales Report...");
 
 				rs = manage.showDailyReportAllItems(date);
+				ResultSet rs2 = manage.showDailyReportCategorialTotal(date);
+				ResultSet rs3 = manage.showDailyReportTotal(date);
+				
+				showResults(rs, rs2, rs3);
 
 				mvb.updateStatusBar("Processing complete, tables show reports for all items, per category, and in total in sequential order.");
 
-				showResults(rs);
+				
 
 				return OPERATIONSUCCESS;
 
@@ -860,6 +866,76 @@ public class ManagerController implements ActionListener, ExceptionListener {
 		mvb.addTable(data);
 	}
 	
+	private void showResults(ResultSet rs, ResultSet rs2, ResultSet rs3)
+	{
+		// CustomTableModel maintains the result set's data, e.g., if  
+		// the result set is updatable, it will update the database
+		// when the table's data is modified.  
+		CustomTableModel model = new CustomTableModel(manage.getConnection(), rs);
+		final CustomTable data = new CustomTable(model);
+		table = data;
+		
+		CustomTableModel model2 = new CustomTableModel(manage.getConnection(), rs2);
+		final CustomTable data2 = new CustomTable(model);
+		table2 = data2;
+		
+		CustomTableModel model3 = new CustomTableModel(manage.getConnection(), rs3);
+		final CustomTable data3 = new CustomTable(model);
+		table3 = data;
+
+		// register to be notified of any exceptions that occur in the model and table
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+		
+		model2.addExceptionListener(this);
+		data2.addExceptionListener(this);
+		
+		model3.addExceptionListener(this);
+		data3.addExceptionListener(this);
+		
+		
+		data.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		data.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!data.getSelectionModel().isSelectionEmpty()) {
+					mvb.enableAddItem();
+				}
+				
+			}
+		});
+		
+		data2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		data2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!data.getSelectionModel().isSelectionEmpty()) {
+					mvb.enableAddItem();
+				}
+				
+			}
+		});
+		
+		data3.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		data3.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!data.getSelectionModel().isSelectionEmpty()) {
+					mvb.enableAddItem();
+				}
+				
+			}
+		});
+
+		// Adds the table to the scrollpane.
+		// By default, a JTable does not have scroll bars.
+		mvb.addTable(data);
+		mvb.addTable(data2);
+		mvb.addTable(data3);
+	}
 
 	
 	
