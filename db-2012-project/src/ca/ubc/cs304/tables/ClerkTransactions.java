@@ -64,17 +64,26 @@ public class ClerkTransactions {
 	public Integer instorePurchase(){
 		try
 		{
-			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null," +
-		" null, null, null, null");
+			//ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null," +
+		//" null, null, null, null)");
 
 		
-			ps.executeUpdate();
+			//ps.executeUpdate();
 		
-			ps = con.prepareStatement("SELECT last_number from user_sequences where sequence_name = \'RECEIPT_COUNTER\'");
+			//ps = con.prepareStatement("SELECT last_number from user_sequences where sequence_name = \'RECEIPT_COUNTER\'");
 			
+			ps = con.prepareStatement("SELECT receipt_counter.NEXTVAL FROM Purchase");
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			Integer receiptid = new Integer(rs.getInt(1));
+			
+			ps = con.prepareStatement("INSERT into Purchase VALUES(?, sysdate, null, " +
+			"null, null, null, null)");
+			
+			ps.setInt(1, receiptid);
+			ResultSet rss = ps.executeQuery();
+	
+			
 			
 			con.commit();
 			

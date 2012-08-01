@@ -272,7 +272,7 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				Integer iupc;
 				Integer iquant;
 
-				if (rid == null) // if no rid for purchase make a new one
+				//if (rid == null) // if no rid for purchase make a new one
 					rid = clerk.instorePurchase();
 
 				// Disallow blank searches
@@ -290,13 +290,13 @@ public class ClerkController implements ActionListener, ExceptionListener {
 				}
 
 				mvb.updateStatusBar("Adding Item to Bill...");
+				mvb.updateStatusBar("generated rid: " + rid.toString());
 
 				if (rid == 0) {
 					mvb.updateStatusBar("Unable to generate receipt id");
 					return OPERATIONFAILED;
 				}
 
-				
 				
 				else {
 					if(item.insertPurchaseItem(rid, iupc, iquant) != true){
