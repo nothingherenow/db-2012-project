@@ -567,8 +567,8 @@ public class ReturnController implements ActionListener, ExceptionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    inputPane.setLayout(gb);
 
-	    // create and place receipt ID label
-	    JLabel label = new JLabel("Receipt ID: ", SwingConstants.RIGHT);	    
+	    // create and place Return ID label
+	    JLabel label = new JLabel("Return ID: ", SwingConstants.RIGHT);	    
 	    c.gridwidth = GridBagConstraints.RELATIVE;
 	    c.insets = new Insets(0, 0, 0, 5);
 	    c.anchor = GridBagConstraints.EAST;
