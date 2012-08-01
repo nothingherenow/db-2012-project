@@ -61,11 +61,12 @@ public class ClerkTransactions {
 	 * Creates new purchase record corresponding to an instore purchase. Returns the receipt number if successful,
 	 * returns 0 if unsuccessful.
 	 */
-	public int instorePurchase(){
+	public Integer instorePurchase(){
 		try
 		{
-			ps = con.prepareStatement("INSERT INTO purchase VALUES(receipt_counter.nextval, sysdate, 'instore'" +
-		", null, null, null, null)");
+			ps = con.prepareStatement("INSERT into Purchase VALUES(receipt_counter.nextval, sysdate, null," +
+		" null, null, null, null");
+
 		
 			ps.executeUpdate();
 		
@@ -73,7 +74,7 @@ public class ClerkTransactions {
 			
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			int receiptid = rs.getInt(1);
+			Integer receiptid = new Integer(rs.getInt(1));
 			
 			con.commit();
 			
@@ -132,6 +133,28 @@ public class ClerkTransactions {
 				return 0; 
 			}
 		}
+	}
+	
+	/*
+	 * 
+	 */
+	public ResultSet receiptDate(Integer rid){
+		try
+		{
+			ps = con.prepareStatement("SELECT p.purdate FROM Purchase p WHERE p.receiptID = ?");
+			ps.setInt(1,  rid);
+			ResultSet rs = ps.executeQuery();
+			return rs;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+		
 	}
 	
 	/* Returns a ResultSet which contains items on a receipt
